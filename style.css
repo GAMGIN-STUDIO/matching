@@ -1,0 +1,52 @@
+/* CSS custom property pro animaci úhlu */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin {
+  to {
+    --angle: 360deg;
+  }
+}
+
+body {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	min-height: 800px;
+
+	& .data-card, & .js-card {
+		min-height: 400px;
+		min-width: 350px;
+		background-color: rgba(128, 128, 128, 0.8);
+		border: 2px solid rgba(128, 128, 128, 0.3);
+		border-radius: 4px;
+		margin: 40px 40px;
+	}
+
+	& .btn {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-width: 200px;
+		min-height: 200px;
+		border-radius: 60px;
+		border: 10px solid transparent;
+		background:
+			linear-gradient(gray) padding-box,
+			conic-gradient(
+				from var(--angle),
+				transparent 0deg,
+				transparent 120deg,
+				blue 240deg,
+				transparent 360deg
+			) border-box;
+
+		animation: spin 5s linear infinite;
+	}
+
+}
