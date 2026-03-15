@@ -1,10 +1,13 @@
 export class Player {
 
+	static onTurnPlayerID = '';
+
 	constructor(name) {
 		this.name = name;
 		this.skip = 0;
 		this.points = 0;
-		this.playerID = this.generatePlayerID();
+		this.id = this.generatePlayerID();
+		this.onTurn = false;
 	}
 
 	generatePlayerID(length = 8){
@@ -34,5 +37,10 @@ export class Player {
 
 	addPoints() {
 		this.points++;
+	}
+
+	static setOnTurnPlayerID(playerID) {
+		this.onTurnPlayerID = playerID;
+		console.log("static player property: " + this.onTurnPlayerID);
 	}
 }

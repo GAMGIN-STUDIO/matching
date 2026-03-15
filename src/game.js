@@ -12,7 +12,8 @@ export class Game {
 		this.themes = dataThemes.themes; 
 
 		// game managment
-		this.players = []; 
+		this.players = [];
+		this.playerOnTurn = [];
 		this.cards = [];
 
 		// game time managment
@@ -23,6 +24,9 @@ export class Game {
 
 		// responsive managment
 		this.windowWidth = window.innerWidth;
+
+		// error managment
+		this.isError = false;
  
 	}
 
@@ -78,6 +82,7 @@ export class Game {
 				this.cards.push(new Card(theme, this.windowWidth, this.access));
 			}
 		}catch(error){
+			this.isError = true;
 			console.log(error);
 		}
 	}
@@ -144,20 +149,30 @@ export class Game {
 	}
 
 	cardsService() {
-		this.createTableTag();
-		for(const card of this.cards) {
-			card.createCardTag();
-			card.initListener();
-			this.tableTag.appendChild(card.tag);
+		if(!this.isError) {
+			this.createTableTag();
+			for(const card of this.cards) {
+				try{
+					card.createCardTag();
+					card.initListener();
+					this.tableTag.appendChild(card.tag);
+				}catch(error){
+					this.isError = true;
+					console.log(error);
+				}
+			}
 		}
 	}
 
 	// game start/end managment
 
 	start() {
-		this.gameTimerF();
-		this.turnTimerF();
-		console.log("game started");
+		if(!this.isError) {
+			this.playerTurn();
+			const gameTimer = this.gameTimerF();
+			this.turnTimerF(gameTimer);
+			console.log("game started");
+		}
 	}
 
 	gameTimerF() {
@@ -169,18 +184,25 @@ export class Game {
 				this.end();
 			}
 		}, 1000);
+		return interval
 	}
 
-	turnTimerF() {
+	turnTimerF(gameTimer) {
 		const interval = setInterval(() => {
 			this.turnTime = this.turnTime - 1;
 			this.turnTimeToTime();
 			if(this.turnTime === 0) {
+				clearInterval(gameTimer);
 				clearInterval(interval);
+				console.log("It's time to the next player's turn!");
 				this.turnTime = 11; // for more fluent time display and 10 seconds turn value show
 				this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
 				if(this.gameTime > 1){
-					this.turnTimerF();
+					setTimeout(() => {
+						this.playerTurn();
+						const newGameTimer = this.gameTimerF();
+						this.turnTimerF(newGameTimer);
+					}, 3000);
 				}
 			}
 		}, 1000);
@@ -205,6 +227,22 @@ export class Game {
 	timeFormat(value) {
 		return value.toString().padStart(2, '0');		
 	}
+
+	playerTurn() {
+		const lastPlayer = this.playerOnTurn.pop();
+		if(lastPlayer !== undefined) {
+			lastPlayer.onTurn = false;
+			this.players.push(lastPlayer);
+		}
+		const player = this.players.shift();
+		player.onTurn = true;
+		Player.setOnTurnPlayerID(player.id);
+		this.playerOnTurn.push(player);
+		alert(`Next turn: ${player.name}`);
+	}
+
+
+
 
 	end() {
 		console.log("game ended");

@@ -1,3 +1,5 @@
+import { Player } from "./player.js";
+
 export class Card {
 	constructor(theme, windowWidth, access) {
 		this.back = "black";
@@ -30,7 +32,7 @@ export class Card {
 		if(this.tag instanceof HTMLElement) {
 			this.tag.addEventListener('click', () => {
 				this.face = !this.face;
-				this.playerID = playerID; // playerID = 'test'
+				this.playerID = Player.onTurnPlayerID;
 			});
 		}else{
 			throw new Error('CARD TAG NOT INITIALIZED - Cannot init card listener');
