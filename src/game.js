@@ -6,22 +6,21 @@ export class Game {
 	constructor(dataThemes) {
 		// admin and other managment
 		this.admin = true;
-		this.access = false;
 
 		// game init managament
 		this.themes = dataThemes.themes; 
 
-		// game managment
+		// core game managment
 		this.players = [];
-		this.playerOnTurn = [];
 		this.cards = [];
 
 		// game time managment
 		this.gameTime = 3601; // hour in seconds + 1 second for more fluent time display
 		this.turnTime = 11; // + 1 second for more fluent time display and 10 seonds turn value show
 		this.gameTimeFormatted = "";
-		this.turnTimeFormatted = "";
-
+		this.turnTimeFormatted = "";    
+		this.turns = 0;
+ 
 		// responsive managment
 		this.windowWidth = window.innerWidth;
 
@@ -30,18 +29,12 @@ export class Game {
  
 	}
 
-	// admin and other managment
-
-	accessInit() {
-		this.access = this.admin ? false : confirm('Do you want to play with accessibility features enabled?');
-	}
-
 	// game init managment
 
-	static async init(access) {
+	static async init() {
 		const res = await fetch("./src/cards/themes.json");
 		const json = await res.json();
-		return new Game(json, access);
+		return new Game(json);
 	}
 
 	// GAME MANAGMENT
@@ -51,14 +44,15 @@ export class Game {
 	playersInit() {
 		let numPlayers = null;
 		while(numPlayers > 3 || numPlayers < 2 || numPlayers === null) {
-			numPlayers = this.admin ? "3" : prompt("Enter the number of players (2-3):");
+			numPlayers = this.admin ? 3 : Number(prompt("Enter the number of players (2-3):"));
 		}
 		for (let i = 0; i < numPlayers; i++) {
 			const playerName = this.admin ? `Player ${i+1}` : prompt(`Enter the name of player ${i+1}:`)
-			const player = new Player(playerName);
+			const player = new Player(playerName, i+1);
 			this.players.push(player);
 		}
 		this.players = this.shuffle(this.players);
+		Card.getReferenceToPlayers(this.players);
 	}
 
 	doubleArray(array) {
@@ -79,8 +73,9 @@ export class Game {
 			const cleanThemes = this.cleanArray(this.themes);
 			const cardThemes = this.shuffle(this.doubleArray(cleanThemes));
 			for(const theme of cardThemes) {
-				this.cards.push(new Card(theme, this.windowWidth, this.access));
+				this.cards.push(new Card(theme, this.windowWidth));
 			}
+			Card.getReferenceToCards(this.cards);
 		}catch(error){
 			this.isError = true;
 			console.log(error);
@@ -136,7 +131,6 @@ export class Game {
 
 	prepare() {
 		this.playersInit();
-		this.accessInit();
 		this.cardsInit();
 	}
 
@@ -154,12 +148,49 @@ export class Game {
 			for(const card of this.cards) {
 				try{
 					card.createCardTag();
-					card.initListener();
+					card.initCardListener();
 					this.tableTag.appendChild(card.tag);
 				}catch(error){
 					this.isError = true;
 					console.log(error);
 				}
+			}
+			this.createReskipTag();
+
+		}
+	}
+
+	// game buttons service
+
+	createReskipTag() {
+		const reskipTag = document.createElement('div');
+		this.reskipTag = reskipTag;
+	}
+
+	initReskipListener() {
+		if(this.reskipTag instanceof HTMLElement) {
+			this.reskipTag.addEventListener('click', () => {
+				// reskip managment
+				const player = Player.playerOnTurn;
+				if(player.skip > 0 && player.points >= 3) {
+					player.skip--;
+					player.points -= 3;
+					console.log('You used reskip button! You lose 3 points but also 1 skip for reward!');
+				}
+			})
+		}else{
+			throw new Error('RESKIP TAG NOT INITIALIZED - Cannot init reskip listener');
+		}
+	}
+
+	gameButtonsService() {
+		if(!this.isError) {
+			// reskip & reveal buttons managment	
+			try{
+				this.initReskipListener();
+			}catch(error){
+				this.isError = true;
+				console.log(error);
 			}
 		}
 	}
@@ -199,7 +230,10 @@ export class Game {
 				this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
 				if(this.gameTime > 1){
 					setTimeout(() => {
-						this.playerTurn();
+						let isSkipped = true;
+						while(isSkipped){
+							isSkipped = this.playerTurn();
+						}
 						const newGameTimer = this.gameTimerF();
 						this.turnTimerF(newGameTimer);
 					}, 3000);
@@ -229,16 +263,29 @@ export class Game {
 	}
 
 	playerTurn() {
-		const lastPlayer = this.playerOnTurn.pop();
-		if(lastPlayer !== undefined) {
-			lastPlayer.onTurn = false;
-			this.players.push(lastPlayer);
-		}
+		this.turns++;
+		Card.addGameTurn(this.turns);
+		// save the player on turn
 		const player = this.players.shift();
+		// reset all players onTurn property to false
+		this.players.forEach(p => p.onTurn = false);
+		// set current player onTurn property to true
 		player.onTurn = true;
-		Player.setOnTurnPlayerID(player.id);
-		this.playerOnTurn.push(player);
-		alert(`Next turn: ${player.name}`);
+		// set player on turn to static property of Player class for easier access
+		Player.setPlayerOnTurn(player);
+		// push the queued player back to the end
+		this.players.push(player);
+		console.log(player);
+
+		// actual skip managment
+		if(player.actualSkip === true){
+			player.actualSkip = false;
+			alert(`${player.name}'s turn will be skipped!`);
+			return true;
+		}else{
+			alert(`Next turn: ${player.name}`);
+			return false;
+		}
 	}
 
 
