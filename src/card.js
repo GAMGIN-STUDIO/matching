@@ -5,6 +5,10 @@ export class Card {
 	static gameCards;
 	static gamePlayers;
 	static gameTurns = 0;
+	static revealObject = {
+		click: false,
+		stop: false
+	};
 
 	constructor(theme, windowWidth) {
 		this.back = "black";
@@ -36,10 +40,10 @@ export class Card {
 		if(this.tag instanceof HTMLElement) {
 			this.tag.addEventListener('click', () => {
 				// if the card is not turned, it means that it doesn't have playerID assignment
-				if(this.face === false && this.playerID === '') {
+				if(this.face === false && this.playerID === '' && Card.revealObject.click === false) {
 					// check if the card has it's sibling already turned on the table
 					const sibling = this.gameCards.find((sibling) => {
-						sibling.face === true && sibling.id === this.id
+						return sibling.face === true && sibling.id === this.id
 					});
 					// make card turned and add ID proof for future comparsions
 					this.face = true;
@@ -60,23 +64,32 @@ export class Card {
 
 								console.log('You found the pair card but first one is NOT yours. You will be skipped (whole and actual skip)');
 							}else{
-								console.log('You found colegeas your pair card, but you will not be skipped until 10 turns of the game.');
+								console.log('You found NOT your pair card, but game not reach 10 turns yet. You will not be skipped.');
 							}
 						}
-						// now the pair must be removed from the table
 					}else{
 						console.log('You turned the card without pair actually')
 						// card can stay in the game
 					}
-				}else if(this.face  === true && this.playerID === Player.playerOnTurn.id){
+				}else if(this.face  === true && this.playerID === Player.playerOnTurn.id && Card.revealObject.click === false){
 					// option to turn card back if it's already turned by the same player
 					this.face = false;
 					this.playerID = '';
-				}else if( this.face === true && this.playerID !== Player.playerOnTurn.id){
+				}else if( this.face === true && this.playerID !== Player.playerOnTurn.id && Card.revealObject.click === false){
 					// warning for incompetent player action
 					console.log('This card is turned by another player. Please choose another CARD!');
+				}else if(this.face === false && this.playerID === '' && Card.revealObject.click === true) {
+					// reveal managment
+					if(this.face === false){
+						this.face = true;
+						Player.playerOnTurn.points--;
+					}else{
+						this.face = false;
+						Card.revealObject.stop = true; // stop revel option in the hiding card moment,, during revealLaunch it would be mistake (too early)
+					}
+				}else{
+					console.log('different scenario - maybe something went wrong? bug?')
 				}
-				
 			});
 		}else{
 			throw new Error('CARD TAG NOT INITIALIZED - Cannot init card listener');
@@ -95,7 +108,12 @@ export class Card {
 		this.gameTurns = amount;
 	}
 
+	static revealLaunch() {
+		this.revealObject.click = true;
+		console.log('You used reveal button! You can click on one card to reveal in addition to your turn');
+	}
+
 	removePairCards(){
-		this.gameCards = this.gameCards.filter((card) => card.id !== this.id);
+		Card.gameCards = Card.gameCards.filter((card) => card.id !== this.id);
 	}
 }

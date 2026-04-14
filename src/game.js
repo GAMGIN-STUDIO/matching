@@ -20,6 +20,9 @@ export class Game {
 		this.gameTimeFormatted = "";
 		this.turnTimeFormatted = "";    
 		this.turns = 0;
+
+		// game buttons managment
+		this.revealClick = false;
  
 		// responsive managment
 		this.windowWidth = window.innerWidth;
@@ -134,7 +137,7 @@ export class Game {
 		this.cardsInit();
 	}
 
-	// game cards service
+	// game cards service and launch
 
 	createTableTag() {
 		const tableTag = document.createElement('div');
@@ -155,16 +158,19 @@ export class Game {
 					console.log(error);
 				}
 			}
-			this.createReskipTag();
-
 		}
 	}
 
-	// game buttons service
+	// game buttons service and launch
 
 	createReskipTag() {
 		const reskipTag = document.createElement('div');
 		this.reskipTag = reskipTag;
+	}
+
+	createRevealTag() {
+		const revealTag = document.createElement('div');
+		this.revealTag = revealTag;
 	}
 
 	initReskipListener() {
@@ -183,11 +189,27 @@ export class Game {
 		}
 	}
 
+	initRevealListener() {
+		if(this.revealTag instanceof HTMLElement) {
+			this.revealTag.addEventListener('click', () => {
+				// reveal managment
+				if(Card.revealObject.stop === false){
+					Card.revealLaunch();
+				}
+			})
+		}else{
+			throw new Error('REVEAL TAG NOT INITIALIZED - Cannot init reveal listener');
+		}
+	}
+
 	gameButtonsService() {
 		if(!this.isError) {
-			// reskip & reveal buttons managment	
+			// reskip & reveal buttons managment
+			this.createReskipTag();
+			this.createRevealTag();	
 			try{
 				this.initReskipListener();
+				this.initRevealListener();
 			}catch(error){
 				this.isError = true;
 				console.log(error);
@@ -225,7 +247,12 @@ export class Game {
 			if(this.turnTime === 0) {
 				clearInterval(gameTimer);
 				clearInterval(interval);
-				console.log("It's time to the next player's turn!");
+				if(this.cards.length > 0){
+					console.log("It's time to the next player's turn!");
+				}else{
+					console.log("All cards are removed from the table!");
+					this.end();
+				}
 				this.turnTime = 11; // for more fluent time display and 10 seconds turn value show
 				this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
 				if(this.gameTime > 1){
@@ -265,6 +292,7 @@ export class Game {
 	playerTurn() {
 		this.turns++;
 		Card.addGameTurn(this.turns);
+		Card.revealClick = false;
 		// save the player on turn
 		const player = this.players.shift();
 		// reset all players onTurn property to false
@@ -288,11 +316,16 @@ export class Game {
 		}
 	}
 
-
-
-
 	end() {
 		console.log("game ended");
+		console.log(`Winner is ${this.findWinner()}`);
+	}
+
+	findWinner() {
+		const sorted = this.players.sort(
+			(a, b) => (a.skip - b.skip) || (b.points - a.points)
+		);
+		return sorted[0].name;
 	}
 
 }
