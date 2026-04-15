@@ -9,6 +9,7 @@ export class Player {
 		this.points = 0;
 		this.id = index  + 'aa' + this.generatePlayerID();
 		this.onTurn = false;
+		this.stopTurn = false;
 	}
 
 	generatePlayerID(length = 8){

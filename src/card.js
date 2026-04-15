@@ -40,7 +40,7 @@ export class Card {
 		if(this.tag instanceof HTMLElement) {
 			this.tag.addEventListener('click', () => {
 				// if the card is not turned, it means that it doesn't have playerID assignment
-				if(this.face === false && this.playerID === '' && Card.revealObject.click === false) {
+				if(this.face === false && this.playerID === '' && Card.revealObject.click === false && Player.playerOnTurn.stopTurn === false) {
 					// check if the card has it's sibling already turned on the table
 					const sibling = this.gameCards.find((sibling) => {
 						return sibling.face === true && sibling.id === this.id
@@ -58,6 +58,7 @@ export class Card {
 							console.log('You found your own pair card! You earned plus 1 point and you can continue in your your turn!');
 						}else if (sibling.playerID !== this.playerID){
 							this.removePairCards();
+							Player.playerOnTurn.stopTurn = true; // stop player's turn only after finding pair card but not his own
 							if(this.gameTurns > 9){
 								Player.playerOnTurn.skip++;
 								Player.playerOnTurn.actualSkip = true;
@@ -71,6 +72,8 @@ export class Card {
 						console.log('You turned the card without pair actually')
 						// card can stay in the game
 					}
+				}else if(this.face === false && this.playerID === '' && Card.revealObject.click === false && Player.playerOnTurn.stopTurn === true){
+					console.log('You cannot turn another card for earn points');
 				}else if(this.face  === true && this.playerID === Player.playerOnTurn.id && Card.revealObject.click === false){
 					// option to turn card back if it's already turned by the same player
 					this.face = false;
@@ -83,12 +86,14 @@ export class Card {
 					if(this.face === false){
 						this.face = true;
 						Player.playerOnTurn.points--;
+						console.log('Now you can see the card, but you lose 1 point for this action!');
 					}else{
 						this.face = false;
 						Card.revealObject.stop = true; // stop revel option in the hiding card moment,, during revealLaunch it would be mistake (too early)
+						console.log('To use reveal option for another card you have to wait to your next turn');
 					}
 				}else{
-					console.log('different scenario - maybe something went wrong? bug?')
+					console.log('different scenario - maybe something went wrong? or unexpected scenario or bug?')
 				}
 			});
 		}else{
