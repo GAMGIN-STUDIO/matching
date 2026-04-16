@@ -10,6 +10,7 @@ export class Player {
 		this.id = index  + 'aa' + this.generatePlayerID();
 		this.onTurn = false;
 		this.stopTurn = false;
+		this.counter = 0;
 	}
 
 	generatePlayerID(length = 8){
@@ -31,6 +32,8 @@ export class Player {
 
 	static setPlayerOnTurn(player) {
 		this.playerOnTurn = player;
+		this.playerOnTurn.stopTurn = false; // reset stopTurn for next turns
+		this.playerOnTurn.counter = 0; // reset counter for next turns
 		console.log("static player property: " + this.playerOnTurn.id);
 	}
 

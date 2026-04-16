@@ -290,6 +290,9 @@ export class Game {
 	}
 
 	playerTurn() {
+		// last turn hold card managment for last player
+		this.holdFunc();
+		// turn managment
 		this.turns++;
 		Card.addGameTurn(this.turns);
 		Card.revealClick = false;
@@ -327,5 +330,30 @@ export class Game {
 		);
 		return sorted[0].name;
 	}
+							
+	holdFunc(){
+		if(Player.playerOnTurn.counter === 1 || Player.playerOnTurn.counter === 0){
+			const toHoldCard = this.cards.find((card) => {
+				return card.face === true && card.playerID === Player.playerOnTurn.id;
+			});
+			if(toHoldCard !== undefined){
+				toHoldCard.holdFlag = true;
+				console.log(`${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`);
+			}
+		}else if(Player.playerOnTurn.counter === 2){
+			this.autoHideCards(Player.playerOnTurn.id);
+		}
+	}
+
+	autoHideCards(pID) {
+		this.cards.forEach((card) => {
+			if(card.face === true && card.playerID === pID){
+				card.face = false;
+				card.playerID = '';
+				card.holdFlag = false; // always during hiding card for sure
+			}
+		});
+	}
+						
 
 }

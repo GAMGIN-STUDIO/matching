@@ -20,6 +20,7 @@ export class Card {
 
 		this.id = theme.id;
 		this.playerID = '';
+		this.holdFlag = false;
 	}
 
 	createCardTag(){
@@ -40,25 +41,33 @@ export class Card {
 		if(this.tag instanceof HTMLElement) {
 			this.tag.addEventListener('click', () => {
 				// if the card is not turned, it means that it doesn't have playerID assignment
-				if(this.face === false && this.playerID === '' && Card.revealObject.click === false && Player.playerOnTurn.stopTurn === false) {
+				if(
+					this.face === false
+					&& this.playerID === ''
+					&& Card.revealObject.click === false
+					&& Player.playerOnTurn.stopTurn === false
+				) {
 					// check if the card has it's sibling already turned on the table
 					const sibling = this.gameCards.find((sibling) => {
 						return sibling.face === true && sibling.id === this.id
 					});
 					// make card turned and add ID proof for future comparsions
-					this.face = true;
+					this.face = true; // face true only after sibling is finded to avoid find in gameCards the same actually turned card without pair
 					this.playerID = Player.playerOnTurn.id;	
 					// find out if the sibling card is turned by the same player or not and decide next steps
 					if(sibling !== undefined){
-						if(sibling.playerID === this.playerID){
+						if(sibling.playerID === this.playerID && sibling.holdFlag === true){
 							Player.playerOnTurn.points++;
 							actualPlayer = this.gamePlayers.pop();
 							this.gamePlayers.unshift(actualPlayer);
 							this.removePairCards();							
-							console.log('You found your own pair card! You earned plus 1 point and you can continue in your your turn!');
+							console.log('You found your own pair card! You earned plus 1 point and you can continue in your turn!');
 						}else if (sibling.playerID !== this.playerID){
 							this.removePairCards();
-							Player.playerOnTurn.stopTurn = true; // stop player's turn only after finding pair card but not his own
+							Player.playerOnTurn.counter++;
+							if(Player.playerOnTurn.counter === 2) {
+								Player.playerOnTurn.stopTurn = true; // stop player's turn only after finding pair card but not his own for 2 times
+							}
 							if(this.gameTurns > 9){
 								Player.playerOnTurn.skip++;
 								Player.playerOnTurn.actualSkip = true;
@@ -69,8 +78,13 @@ export class Card {
 							}
 						}
 					}else{
-						console.log('You turned the card without pair actually')
+						console.log('You turned the card without pair actually, you can turn one more card or wait rest of the time till next players turn');
 						// card can stay in the game
+						this.face = true;
+						this.playerID = Player.playerOnTurn.id;
+						if(this.isHoldOnTable(Player.playerOnTurn.id)){
+							Player.playerOnTurn.stopTurn = true; // stop player's turn after one card turned without pair but with hold card from last turns
+						};
 					}
 				}else if(this.face === false && this.playerID === '' && Card.revealObject.click === false && Player.playerOnTurn.stopTurn === true){
 					console.log('You cannot turn another card for earn points');
@@ -78,6 +92,7 @@ export class Card {
 					// option to turn card back if it's already turned by the same player
 					this.face = false;
 					this.playerID = '';
+					this.holdFlag = false; // always during hiding card
 				}else if( this.face === true && this.playerID !== Player.playerOnTurn.id && Card.revealObject.click === false){
 					// warning for incompetent player action
 					console.log('This card is turned by another player. Please choose another CARD!');
@@ -120,5 +135,12 @@ export class Card {
 
 	removePairCards(){
 		Card.gameCards = Card.gameCards.filter((card) => card.id !== this.id);
+	}
+
+	isHoldOnTable(pID) {
+		const isHoldFound = this.gameCards.some((card) => {
+			return card.face === true && card.playerID === pID && card.holdFlag === true;
+		});
+		return isHoldFound;
 	}
 }
