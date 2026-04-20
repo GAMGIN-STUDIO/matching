@@ -25,7 +25,12 @@ export class Game {
 		this.revealClick = false;
  
 		// responsive managment
-		this.windowWidth = window.innerWidth;
+		this.sizeObject = {
+			cardsGap: 4, // pixels
+			tableGridIndex: 10, // cols and rows of the table, it will be square
+			width: window.innerWidth,
+			height: window.innerHeight
+		};
 
 		// error managment
 		this.isError = false;
@@ -76,7 +81,7 @@ export class Game {
 			const cleanThemes = this.cleanArray(this.themes);
 			const cardThemes = this.shuffle(this.doubleArray(cleanThemes));
 			for(const theme of cardThemes) {
-				this.cards.push(new Card(theme, this.windowWidth));
+				this.cards.push(new Card(theme, this.sizeObject));
 			}
 			Card.getReferenceToCards(this.cards);
 		}catch(error){
@@ -140,36 +145,74 @@ export class Game {
 	// game cards service and launch
 
 	createTableTag() {
-		const tableTag = document.createElement('div');
-		tableTag.classList.add('js-table');
+		const tableTag = document.createElement('section');
+		tableTag.classList.add('table');
 		this.tableTag = tableTag;
+	}
+
+	makeGameSizes(resize = false) {
+		if(resize){
+			this.sizeObject = {
+				cardsGap: 4, // pixels
+				tableGridIndex: 10, // cols and rows of the table, it will be square
+				width: window.innerWidth,
+				height: window.innerHeight
+			};
+		}
+		// table size managment
+		let saveSize = Math.min(this.sizeObject.width, this.sizeObject.height);
+		if(saveSize >= 800) {
+			saveSize = saveSize - 150; // 150 for game buttons (flex direction row), lower saveSize will be flex direction column
+			document.querySelector('main').style.flexDirection = 'row';
+		}else{
+			document.querySelector('main').style.flexDirection = 'column';
+		}
+		this.tableTag.width = `${saveSize}px`;
+		this.tableTag.height = `${saveSize}px`;
+		// card size managment
+		const rawCardSize = Math.round(saveSize / this.sizeObject.tableGridIndex);
+		const cardSize  = rawCardSize - (this.sizeObject.cardsGap * 2); // gap * 2 cause of both cross-side directions
+		resize ? Card.useCardSize(`${cardSize}px`, true) : Card.useCardSize(`${cardSize}px`);
 	}
 
 	cardsService() {
 		if(!this.isError) {
 			this.createTableTag();
-			for(const card of this.cards) {
-				try{
-					card.createCardTag();
-					card.initCardListener();
-					this.tableTag.appendChild(card.tag);
-				}catch(error){
-					this.isError = true;
-					console.log(error);
+			this.makeGameSizes();
+			try{
+				if(this.tableTag instanceof HTMLElement) {
+					for(const card of this.cards) {
+						card.createCardTag();
+						card.initCardListener();
+						this.tableTag.appendChild(card.tag);
+					}
+				}else{
+					throw new Error('TABLE TAG NOT CORRECT - Cannot launch appending cards');
 				}
+			}catch(error){
+				this.isError = true;
+				console.log(error);
 			}
 		}
 	}
 
 	// game buttons service and launch
 
+	createControlPanelTag() {
+		const controlPanelTag = document.createElement('section');
+		controlPanelTag.classList.add('control-panel');
+		this.controlPanelTag = controlPanelTag;
+	}
+
 	createReskipTag() {
 		const reskipTag = document.createElement('div');
+		reskipTag.innerText = "Reskip";
 		this.reskipTag = reskipTag;
 	}
 
 	createRevealTag() {
 		const revealTag = document.createElement('div');
+		revealTag.innerText = "Reveal";
 		this.revealTag = revealTag;
 	}
 
@@ -206,10 +249,13 @@ export class Game {
 		if(!this.isError) {
 			// reskip & reveal buttons managment
 			this.createReskipTag();
-			this.createRevealTag();	
+			this.createRevealTag();
+			this.createControlPanelTag();
 			try{
 				this.initReskipListener();
 				this.initRevealListener();
+				this.controlPanelTag.appendChild(this.revealTag);
+				this.controlPanelTag.appendChild(this.reskipTag);
 			}catch(error){
 				this.isError = true;
 				console.log(error);
@@ -217,9 +263,42 @@ export class Game {
 		}
 	}
 
+	// game mount managment - mounting game components (table with cards and game buttons) to the DOM
+
+	findMountPoint() {
+		const mountPoint = document.querySelector('main');
+		if(mountPoint instanceof HTMLElement) {
+			this.mountPoint = mountPoint;
+		}else{
+			throw new Error('MOUNT POINT NOT FOUND - Cannot find mount point in the DOM');
+		}
+	}
+
+	mountTable() {
+		try{
+			this.findMountPoint();
+			this.mountPoint.appendChild(this.tableTag);
+		}catch(error){
+			this.isError = true;
+			console.log(error);
+		}
+	}
+
+	mountGameButtons() {
+		try{
+			this.findMountPoint();
+			this.mountPoint.appendChild(this.controlPanelTag);
+		}catch(error){
+			this.isError = true;
+			console.log(error);
+		}
+	}
+
 	// game start/end managment
 
 	start() {
+		this.mountTable();
+		this.mountGameButtons();
 		if(!this.isError) {
 			this.playerTurn();
 			const gameTimer = this.gameTimerF();
@@ -332,16 +411,18 @@ export class Game {
 	}
 							
 	holdFunc(){
-		if(Player.playerOnTurn.counter === 1 || Player.playerOnTurn.counter === 0){
-			const toHoldCard = this.cards.find((card) => {
-				return card.face === true && card.playerID === Player.playerOnTurn.id;
-			});
-			if(toHoldCard !== undefined){
-				toHoldCard.holdFlag = true;
-				console.log(`${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`);
+		if(this.turns > 0){
+			if(Player.playerOnTurn.counter === 1 || Player.playerOnTurn.counter === 0){
+				const toHoldCard = this.cards.find((card) => {
+					return card.face === true && card.playerID === Player.playerOnTurn.id;
+				});
+				if(toHoldCard !== undefined){
+					toHoldCard.holdFlag = true;
+					console.log(`${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`);
+				}
+			}else if(Player.playerOnTurn.counter === 2){
+				this.autoHideCards(Player.playerOnTurn.id);
 			}
-		}else if(Player.playerOnTurn.counter === 2){
-			this.autoHideCards(Player.playerOnTurn.id);
 		}
 	}
 

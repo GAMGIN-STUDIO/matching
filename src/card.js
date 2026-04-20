@@ -9,10 +9,10 @@ export class Card {
 		click: false,
 		stop: false
 	};
+	static cardSize;
 
-	constructor(theme, windowWidth) {
+	constructor(theme) {
 		this.back = "black";
-		this.size = windowWidth / 10;
 		this.border = false;
 
 		this.face = false;
@@ -25,10 +25,10 @@ export class Card {
 
 	createCardTag(){
 		const cardTag = document.createElement('div');
-		cardTag.classList.add('js-card');
-		cardTag.id = `card-${this.id}`;
-		cardTag.style.width = `${this.size}px`;
-		cardTag.style.height = `${this.size}px`;
+		cardTag.classList.add('js-card'); // initialized by js VanillaTilt object 
+		cardTag.id = `card-${this.id}`; 
+		cardTag.style.width = Card.cardSize;
+		cardTag.style.height = Card.cardSize;
 		cardTag.style.backgroundColor = this.back;
 		cardTag.style.border = this.border ? '2px solid black' : 'none';
 		cardTag.dataset.themeColor = `${this.theme.color}`;
@@ -142,5 +142,15 @@ export class Card {
 			return card.face === true && card.playerID === pID && card.holdFlag === true;
 		});
 		return isHoldFound;
+	}
+
+	static useCardSize(size, resize = false) {
+		this.cardSize = size;
+		if(resize) {
+			this.gameCards.forEach((card) => {
+				card.tag.style.width = this.cardSize;
+				card.tag.style.height = this.cardSize;
+			});
+		}
 	}
 }
