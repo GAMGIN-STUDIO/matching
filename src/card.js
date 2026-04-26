@@ -11,8 +11,8 @@ export class Card {
 	};
 	static cardSize;
 
-	constructor(theme) {
-		this.back = "black";
+	constructor(theme, odd) {
+		this.back = odd ? "black" : "grey"; // condition for black&white color pattern decision
 		this.border = false;
 
 		this.face = false;
@@ -30,7 +30,7 @@ export class Card {
 		cardTag.style.width = Card.cardSize;
 		cardTag.style.height = Card.cardSize;
 		cardTag.style.backgroundColor = this.back;
-		cardTag.style.border = this.border ? '2px solid black' : 'none';
+		cardTag.style.border = this.border ? '2px solid red' : 'none';
 		cardTag.dataset.themeColor = `${this.theme.color}`;
 		cardTag.dataset.themeIcon = `${this.theme.icon}`;
 		// cardTag.dataset.face = `${this.face}`; // is not the right way to store face value

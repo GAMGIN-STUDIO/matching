@@ -13,6 +13,15 @@ export class Game {
 		// core game managment
 		this.players = [];
 		this.cards = [];
+		this.numCards = null;
+
+		// mount managment
+		this.mountObject = {
+			mountPoint: false,
+			tableTag: false,
+			controlPanelTag: false,
+			tiltLibrary: false
+		};
 
 		// game time managment
 		this.gameTime = 3601; // hour in seconds + 1 second for more fluent time display
@@ -26,11 +35,20 @@ export class Game {
  
 		// responsive managment
 		this.sizeObject = {
-			cardsGap: 4, // pixels
-			tableGridIndex: 10, // cols and rows of the table, it will be square
+			cardsGap: null, // pixels
+			tablePadding: 12, // pixels
+			tableGridIndex: null, // cols and rows of the table, it will be square
 			width: window.innerWidth,
 			height: window.innerHeight
 		};
+
+		// size comfort managment
+		this.sizeComfort = {
+			small: 350,
+			border: 500,
+			good: 650, 
+			comfort: 800
+		}
 
 		// error managment
 		this.isError = false;
@@ -51,7 +69,13 @@ export class Game {
 
 	playersInit() {
 		let numPlayers = null;
-		while(numPlayers > 3 || numPlayers < 2 || numPlayers === null) {
+		while(
+				numPlayers === null ||
+				Number.isNaN(numPlayers) ||
+				numPlayers < 2 ||
+				numPlayers > 3 ||
+				!Number.isInteger(numPlayers)
+		) {
 			numPlayers = this.admin ? 3 : Number(prompt("Enter the number of players (2-3):"));
 		}
 		for (let i = 0; i < numPlayers; i++) {
@@ -78,15 +102,64 @@ export class Game {
 
 	cardsInit() {
 		try{
+			const lowerSize = Math.min(this.sizeObject.width, this.sizeObject.height);
+			// amount of cards preparing part
+			while(
+				this.numCards === null || Number.isNaN(this.numCards) || !Number.isInteger(this.numCards) || this.sizeControl(lowerSize)
+			) {
+				this.sizeControl(lowerSize, true)				
+			}
+			// let add sizes into size object
+			this.sizeObject.tableGridIndex = this.numCards;
+			this.sizeObject.cardsGap = 10 + (this.numCards - 10);
+			// cards themes preparing part and creating deck of cards
 			const cleanThemes = this.cleanArray(this.themes);
 			const cardThemes = this.shuffle(this.doubleArray(cleanThemes));
-			for(const theme of cardThemes) {
-				this.cards.push(new Card(theme, this.sizeObject));
+			const grid = this.sizeObject.tableGridIndex;
+			let oddFlag = 0; // for black&white color pattern
+			let odd = true; // for black&white color pattern
+			for (let i = 0; i < (grid * grid); i++) { // for example grid index = 7 then 7x7 = 49 cards then 0-48 cycle = 49 cards
+				this.cards.push(new Card(cardThemes[i], odd));
+				// part for black&white color pattern
+				oddFlag++;
+				if(oddFlag === grid){
+					oddFlag = 0;
+					odd = !odd;
+				}
 			}
 			Card.getReferenceToCards(this.cards);
+			
 		}catch(error){
 			this.isError = true;
 			console.log(error);
+		}
+	}
+
+	sizeControl(lowerSize, isForPrompt = false){
+		if(isForPrompt){
+			if(lowerSize >= this.sizeComfort.comfort){
+				this.numCards = this.admin ? 10 : Number(prompt("Amount of cards - 6 (6x6), 7 (7x7), 8 (8x8), 9 (9x9), 10 (10x10) :"));
+			}else if(lowerSize >= this.sizeComfort.good){
+				this.numCards = this.admin ? 8 : Number(prompt("Amount of cards - 6 (6x6), 7 (7x7), 8 (8x8) :"));
+			}else if(lowerSize >= this.sizeComfort.border){
+				this.numCards = this.admin ? 7 : Number(prompt("Amount of cards - 5 (5x5), 6 (6x6), 7 (7x7) :"));
+			}else if(lowerSize >= this.sizeComfort.small){
+				this.numCards = this.admin ? 6 : Number(prompt("Amount of cards - 5 (5x5), 6 (6x6) :"));
+			}else{
+				this.numCards = this.admin ? 5 : Number(prompt("Amount of cards - you can choose only 5 (5x5) :"));
+			}
+		}else{
+				if(lowerSize >= this.sizeComfort.comfort){
+					return this.numCards < 6 || this.numCards > 10;
+				}else if(lowerSize >= this.sizeComfort.good){
+					return this.numCards < 6 || this.numCards > 8;
+				}else if(lowerSize >= this.sizeComfort.border){
+					return this.numCards < 5 || this.numCards > 7;
+				}else if(lowerSize >= this.sizeComfort.small){
+					return this.numCards < 5 || this.numCards > 6;
+				}else{
+					return this.numCards < 5 || this.numCards > 5;
+				}
 		}
 	}
 
@@ -153,25 +226,36 @@ export class Game {
 	makeGameSizes(resize = false) {
 		if(resize){
 			this.sizeObject = {
-				cardsGap: 4, // pixels
+				cardsGap: 10, // pixels
+				tablePadding: 10, // pixels
 				tableGridIndex: 10, // cols and rows of the table, it will be square
 				width: window.innerWidth,
 				height: window.innerHeight
 			};
 		}
+
 		// table size managment
-		let saveSize = Math.min(this.sizeObject.width, this.sizeObject.height);
-		if(saveSize >= 800) {
-			saveSize = saveSize - 150; // 150 for game buttons (flex direction row), lower saveSize will be flex direction column
+		let saveSize = Math.min(this.sizeObject.width, this.sizeObject.height) - (2 * this.sizeObject.tablePadding); // savesize for cards, has to be lower about 2 paddings of the table
+		if(saveSize >= this.sizeComfort.comfort) {
+			saveSize = saveSize - 150; // 150 = just for game buttons (flex direction row)
 			document.querySelector('main').style.flexDirection = 'row';
+			document.querySelector('main').style.justifyContent = 'center';
+			document.querySelector('body').classList.add('desktop'); // main is row but control panel is column
 		}else{
+			saveSize = saveSize - 100; // 100 = for game buttons 40px + cca 60px header with score (flex direciton column)
 			document.querySelector('main').style.flexDirection = 'column';
+			document.querySelector('main').style.alignItems = 'center';
+			document.querySelector('body').classList.add('mobile'); // main is column but control panel is row
 		}
-		this.tableTag.width = `${saveSize}px`;
-		this.tableTag.height = `${saveSize}px`;
+		this.tableTag.style.width = `${saveSize}px`;
+		this.tableTag.style.height = `${saveSize}px`;
+		this.tableTag.style.gap = `${this.sizeObject.cardsGap}px`;
+		this.tableTag.style.padding = `${this.sizeObject.tablePadding}px`;
+		this.tableTag.style.gridTemplateColumns = `repeat(${this.sizeObject.tableGridIndex}, 1fr)`;
+
 		// card size managment
 		const rawCardSize = Math.round(saveSize / this.sizeObject.tableGridIndex);
-		const cardSize  = rawCardSize - (this.sizeObject.cardsGap * 2); // gap * 2 cause of both cross-side directions
+		const cardSize  = rawCardSize - (this.sizeObject.cardsGap);
 		resize ? Card.useCardSize(`${cardSize}px`, true) : Card.useCardSize(`${cardSize}px`);
 	}
 
@@ -269,6 +353,7 @@ export class Game {
 		const mountPoint = document.querySelector('main');
 		if(mountPoint instanceof HTMLElement) {
 			this.mountPoint = mountPoint;
+			this.mountObject['mountPoint'] = true; // mountPoint is under double control (mountObject plus error branch)
 		}else{
 			throw new Error('MOUNT POINT NOT FOUND - Cannot find mount point in the DOM');
 		}
@@ -278,6 +363,7 @@ export class Game {
 		try{
 			this.findMountPoint();
 			this.mountPoint.appendChild(this.tableTag);
+			this.mountObject['tableTag'] = true;
 		}catch(error){
 			this.isError = true;
 			console.log(error);
@@ -287,18 +373,39 @@ export class Game {
 	mountGameButtons() {
 		try{
 			this.findMountPoint();
-			this.mountPoint.appendChild(this.controlPanelTag);
+			this.mountPoint.prepend(this.controlPanelTag);
+			this.mountObject['controlPanelTag'] = true;
 		}catch(error){
 			this.isError = true;
 			console.log(error);
 		}
 	}
 
+	mountGame() {
+		if(!this.isError) {
+			this.mountTable();
+			this.mountGameButtons();
+			this.tiltLaunch();
+		}
+	}
+
+	allMounted() {
+		for(const key in this.mountObject) {
+			if(this.mountObject[key] === false) {
+				throw new Error(`GAME NOT STARTED - Key component ${key} is not mounted`);
+			}
+		}
+	}
+
 	// game start/end managment
 
 	start() {
-		this.mountTable();
-		this.mountGameButtons();
+		try{
+			this.allMounted();
+		}catch(error){
+			this.isError = true;
+			console.log(error);
+		}
 		if(!this.isError) {
 			this.playerTurn();
 			const gameTimer = this.gameTimerF();
@@ -434,6 +541,41 @@ export class Game {
 				card.holdFlag = false; // always during hiding card for sure
 			}
 		});
+	}
+
+	// TILT MANAGMENT
+
+	tiltLaunch() {
+		//It also supports NodeList
+		VanillaTilt.init(document.querySelectorAll(".js-card"),
+		{
+			/* library don't support rewriting data atributes by js init method, js would be ignored */
+			/* All options with defaults */
+			reverse:                false,  // reverse the tilt direction
+			max:                    35,     // max tilt rotation (degrees)
+			startX:                 0,      // the starting tilt on the X axis, in degrees.
+			startY:                 0,      // the starting tilt on the Y axis, in degrees.
+			perspective:            1000,   // Transform perspective, the lower the more extreme the tilt gets.
+			scale:                  1,      // 2 = 200%, 1.5 = 150%, etc..
+			speed:                  300,    // Speed of the enter/exit transition
+			transition:             true,   // Set a transition on enter/exit.
+			axis:                   null,   // What axis should be enabled. Can be "x" or "y"
+			reset:                  true,   // If the tilt effect has to be reset on exit.
+			"reset-to-start":       false,   // Whether the exit reset will go to [0,0] (default) or [startX, startY]
+			easing:                 "cubic-bezier(.03,.98,.52,.99)",    // Easing on enter/exit.
+			glare:                  false,  // if it should have a "glare" effect
+			"max-glare":            1,      // the maximum "glare" opacity (1 = 100%, 0.5 = 50%)
+			"glare-prerender":      false,  // false = VanillaTilt creates the glare elements for you, otherwise
+														// you need to add .js-tilt-glare>.js-tilt-glare-inner by yourself
+			"mouse-event-element":  null,   // css-selector or link to HTML-element what will be listen mouse events
+			gyroscope:              true,   // Boolean to enable/disable device orientation detection,
+			gyroscopeMinAngleX:     -45,    // This is the bottom limit of the device angle on X axis, meaning that a device rotated at this angle would tilt the element as if the mouse was on the left border of the element;
+			gyroscopeMaxAngleX:     45,     // This is the top limit of the device angle on X axis, meaning that a device rotated at this angle would tilt the element as if the mouse was on the right border of the element;
+			gyroscopeMinAngleY:     -45,    // This is the bottom limit of the device angle on Y axis, meaning that a device rotated at this angle would tilt the element as if the mouse was on the top border of the element;
+			gyroscopeMaxAngleY:     45,     // This is the top limit of the device angle on Y axis, meaning that a device rotated at this angle would tilt the element as if the mouse was on the bottom border of the element;
+		});
+
+		this.mountObject['tiltLibrary'] = true;
 	}
 						
 
