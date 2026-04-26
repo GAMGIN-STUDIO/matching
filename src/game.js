@@ -13,7 +13,7 @@ export class Game {
 		// core game managment
 		this.players = [];
 		this.cards = [];
-		this.numCards = null;
+		this.gridIndex = null; // cols and rows of the table, it will be square
 
 		// mount managment
 		this.mountObject = {
@@ -37,16 +37,14 @@ export class Game {
 		this.sizeObject = {
 			cardsGap: null, // pixels
 			tablePadding: 12, // pixels
-			tableGridIndex: null, // cols and rows of the table, it will be square
 			width: window.innerWidth,
 			height: window.innerHeight
 		};
 
 		// size comfort managment
 		this.sizeComfort = {
-			small: 350,
-			border: 500,
-			good: 650, 
+			border: 400,
+			good: 600, 
 			comfort: 800
 		}
 
@@ -105,24 +103,35 @@ export class Game {
 			const lowerSize = Math.min(this.sizeObject.width, this.sizeObject.height);
 			// amount of cards preparing part
 			while(
-				this.numCards === null || Number.isNaN(this.numCards) || !Number.isInteger(this.numCards) || this.sizeControl(lowerSize)
+				this.gridIndex === null || this.sizeControl(lowerSize)
 			) {
-				this.sizeControl(lowerSize, true)				
+				this.askForSize(lowerSize)				
 			}
-			// let add sizes into size object
-			this.sizeObject.tableGridIndex = this.numCards;
-			this.sizeObject.cardsGap = 10 + (this.numCards - 10);
-			// cards themes preparing part and creating deck of cards
-			const cleanThemes = this.cleanArray(this.themes);
-			const cardThemes = this.shuffle(this.doubleArray(cleanThemes));
-			const grid = this.sizeObject.tableGridIndex;
-			let oddFlag = 0; // for black&white color pattern
-			let odd = true; // for black&white color pattern
-			for (let i = 0; i < (grid * grid); i++) { // for example grid index = 7 then 7x7 = 49 cards then 0-48 cycle = 49 cards
+			// right value convert to real number
+			this.gridIndex = Number(this.gridIndex); // gridI * gridI will be whole table of cards
+			// clean themes func and control enough amount themes for game
+			const cutIndex = (this.gridIndex * this.gridIndex) / 2; // exact half of choosed cards amount are themes source mimimally needed
+			const cleanThemes = this.cleanArray(this.themes); // whole source of themes (not only half of choosed table grid)
+			if (cleanThemes.length < cutIndex) {
+			throw new Error("Not enough themes for selected grid size");
+			}
+			// controled grid index use for cards gap computing
+			this.sizeObject.cardsGap = 10 + (this.gridIndex - 10);
+			// cards themes preparing part
+			const preShuffleThemes = this.shuffle(cleanThemes); // each pre selection need to be different
+			const preFinishedCardsArray = []; // just need to be filled doubled
+			for(let i = 0; i < cutIndex; i++){
+				preFinishedCardsArray.push(preShuffleThemes[i]);
+			}
+			const cardThemes = this.shuffle(this.doubleArray(preFinishedCardsArray)); // after double func it need shuffle again
+			let oddFlag = 0; // for black&grey color pattern
+			let odd = true; // for black&grey color pattern
+			// use cardThemes array (right length, cleaned & contains only pairs) for creating deck of cards
+			for (let i = 0; i < cardThemes.length; i++) {
 				this.cards.push(new Card(cardThemes[i], odd));
-				// part for black&white color pattern
+				// part for black&grey color pattern
 				oddFlag++;
-				if(oddFlag === grid){
+				if(oddFlag === this.gridIndex){
 					oddFlag = 0;
 					odd = !odd;
 				}
@@ -135,31 +144,27 @@ export class Game {
 		}
 	}
 
-	sizeControl(lowerSize, isForPrompt = false){
-		if(isForPrompt){
-			if(lowerSize >= this.sizeComfort.comfort){
-				this.numCards = this.admin ? 10 : Number(prompt("Amount of cards - 6 (6x6), 7 (7x7), 8 (8x8), 9 (9x9), 10 (10x10) :"));
-			}else if(lowerSize >= this.sizeComfort.good){
-				this.numCards = this.admin ? 8 : Number(prompt("Amount of cards - 6 (6x6), 7 (7x7), 8 (8x8) :"));
-			}else if(lowerSize >= this.sizeComfort.border){
-				this.numCards = this.admin ? 7 : Number(prompt("Amount of cards - 5 (5x5), 6 (6x6), 7 (7x7) :"));
-			}else if(lowerSize >= this.sizeComfort.small){
-				this.numCards = this.admin ? 6 : Number(prompt("Amount of cards - 5 (5x5), 6 (6x6) :"));
-			}else{
-				this.numCards = this.admin ? 5 : Number(prompt("Amount of cards - you can choose only 5 (5x5) :"));
-			}
+	sizeControl(lowerSize){
+		if(lowerSize >= this.sizeComfort.comfort){
+			return this.gridIndex !== "4" && this.gridIndex !== "6" && this.gridIndex !== "8" && this.gridIndex !== "10";
+		}else if(lowerSize >= this.sizeComfort.good){
+			return this.gridIndex !== "4" && this.gridIndex !== "6" && this.gridIndex !== "8";
+		}else if(lowerSize >= this.sizeComfort.border){
+			return this.gridIndex !== "4" && this.gridIndex !== "6";
 		}else{
-				if(lowerSize >= this.sizeComfort.comfort){
-					return this.numCards < 6 || this.numCards > 10;
-				}else if(lowerSize >= this.sizeComfort.good){
-					return this.numCards < 6 || this.numCards > 8;
-				}else if(lowerSize >= this.sizeComfort.border){
-					return this.numCards < 5 || this.numCards > 7;
-				}else if(lowerSize >= this.sizeComfort.small){
-					return this.numCards < 5 || this.numCards > 6;
-				}else{
-					return this.numCards < 5 || this.numCards > 5;
-				}
+			return this.gridIndex !== "4";
+		}
+	}
+
+	askForSize(lowerSize){
+		if(lowerSize >= this.sizeComfort.comfort){
+			this.gridIndex = this.admin ? "10" : prompt("Amount of cards - 4 (4x4), 6 (6x6), 8 (8x8), 10 (10x10) :");
+		}else if(lowerSize >= this.sizeComfort.good){
+			this.gridIndex = this.admin ? "8" : prompt("Amount of cards - 4 (4x4), 6 (6x6), 8 (8x8) :");
+		}else if(lowerSize >= this.sizeComfort.border){
+			this.gridIndex = this.admin ? "6" : prompt("Amount of cards - 4 (4x4), 6 (6x6) :");
+		}else{
+			this.gridIndex = this.admin ? "4" : prompt("Amount of cards - you can choose only 4 (4x4), write 4 :");
 		}
 	}
 
@@ -224,15 +229,15 @@ export class Game {
 	}
 
 	makeGameSizes(resize = false) {
-		if(resize){
+/* 		if(resize){
 			this.sizeObject = {
 				cardsGap: 10, // pixels
 				tablePadding: 10, // pixels
-				tableGridIndex: 10, // cols and rows of the table, it will be square
+				tableGridIndex: 10, // cols and rows of the table, it will be square,, NOW IT IS NOT EXISTS
 				width: window.innerWidth,
 				height: window.innerHeight
 			};
-		}
+		} */
 
 		// table size managment
 		let saveSize = Math.min(this.sizeObject.width, this.sizeObject.height) - (2 * this.sizeObject.tablePadding); // savesize for cards, has to be lower about 2 paddings of the table
@@ -251,10 +256,10 @@ export class Game {
 		this.tableTag.style.height = `${saveSize}px`;
 		this.tableTag.style.gap = `${this.sizeObject.cardsGap}px`;
 		this.tableTag.style.padding = `${this.sizeObject.tablePadding}px`;
-		this.tableTag.style.gridTemplateColumns = `repeat(${this.sizeObject.tableGridIndex}, 1fr)`;
+		this.tableTag.style.gridTemplateColumns = `repeat(${this.gridIndex}, 1fr)`;
 
 		// card size managment
-		const rawCardSize = Math.round(saveSize / this.sizeObject.tableGridIndex);
+		const rawCardSize = Math.round(saveSize / this.gridIndex);
 		const cardSize  = rawCardSize - (this.sizeObject.cardsGap);
 		resize ? Card.useCardSize(`${cardSize}px`, true) : Card.useCardSize(`${cardSize}px`);
 	}
