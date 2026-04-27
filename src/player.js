@@ -1,6 +1,7 @@
 export class Player {
 
 	static playerOnTurn;
+	static gamePlayers;
 
 	constructor(name, index) {
 		this.name = name;
@@ -30,11 +31,47 @@ export class Player {
 		this.points++;
 	}
 
+	writePlayerOnTurn(playerOnTurnTag, playerID) {
+		const playerTag = document.querySelector(`${playerID}`);
+		if(playerOnTurnTag.matches(`#${playerID}` && playerID === Player.playerOnTurn.id)){
+			playerTag.classList.add('active');
+			document.querySelector('#name').innerText = Player.playerOnTurn.name;
+			document.querySelector('#points').innerText = Player.playerOnTurn.points;
+			document.querySelector('#skip').innerText = Player.playerOnTurn.skip;
+			document.querySelector('#actual-skip').innerText = Player.playerOnTurn.actualSkip ? 'Yes' : 'No';;
+			document.querySelector('#counter').innerText = Player.playerOnTurn.counter;
+		}else{
+			throw new Error('Player tag parameters do not match the palyer on turn');
+		}
+	}
+
+	writePlayersQueue(){
+		// player who will be on turn after the actual player on turn
+		const playerII = document.querySelector('.player-II');
+		playerII.innerText = this.gamePlayers(0).name; // at this moment the player is on the first place in the array on index 0
+		playerII.id = this.gamePlayers(0).id;
+		// player who will be on turn after the palyerII 
+		const playerIII = document.querySelector('.player-III');
+		playerIII.innerText = this.gamePlayers(1).name; // at this moment the player is on the second place in the array on index 1
+		playerIII.id = this.gamePlayers(1).id;
+
+	}
+
 	static setPlayerOnTurn(player) {
 		this.playerOnTurn = player;
 		this.playerOnTurn.stopTurn = false; // reset stopTurn for next turns
 		this.playerOnTurn.counter = 0; // reset counter for next turns
-		console.log("static player property: " + this.playerOnTurn.id);
+		const playerOnTurnTag = document.querySelector('.js-player');
+		if(playerOnTurnTag instanceof HTMLElement) {
+			playerOnTurnTag.id = `${this.playerOnTurn.id}`;
+			writePlayerOnTurn(playerOnTurnTag, this.playerOnTurn.id);
+		}else {
+			throw new Error('Player tag is not found in the DOM');
+		}
+	}
+
+	static getReferenceToPlayers(reference){
+		this.gamePlayers = reference;
 	}
 
 }

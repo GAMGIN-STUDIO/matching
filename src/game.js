@@ -48,6 +48,19 @@ export class Game {
 			comfort: 800
 		}
 
+		// header height size
+		this.headerHeight = {
+			value: 60
+		}
+		this.headerHeight.style = `${this.headerHeight.value}px`;
+		document.querySelector('header').style.height = this.headerHeight.style;
+
+		// control panel height size in column direction
+		this.ctrlPanelHeight = {
+			value: 40
+		}
+		this.ctrlPanelHeight.style = `${this.ctrlPanelHeight.value}px`;
+
 		// error managment
 		this.isError = false;
  
@@ -83,6 +96,7 @@ export class Game {
 		}
 		this.players = this.shuffle(this.players);
 		Card.getReferenceToPlayers(this.players);
+		Player.getReferenceToPlayers(this.players);
 	}
 
 	doubleArray(array) {
@@ -247,7 +261,8 @@ export class Game {
 			document.querySelector('main').style.justifyContent = 'center';
 			document.querySelector('body').classList.add('desktop'); // main is row but control panel is column
 		}else{
-			saveSize = saveSize - 100; // 100 = for game buttons 40px + cca 60px header with score (flex direciton column)
+			saveSize = saveSize - (this.ctrlPanelHeight.value + this.headerHeight.value); // 100 = for game buttons 40px + cca 60px header with score (flex direciton column)
+			this.controlPanelTag.style.height = this.ctrlPanelHeight.style;
 			document.querySelector('main').style.flexDirection = 'column';
 			document.querySelector('main').style.alignItems = 'center';
 			document.querySelector('body').classList.add('mobile'); // main is column but control panel is row
