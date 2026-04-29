@@ -31,8 +31,14 @@
 
 		& header {
 			display: flex;
-			min-height: 20px;
-			background-color: rosybrown;
+			justify-content: center;
+			align-items: center;
+			background-color: rgba(41, 150, 88, 0.467);
+
+			& h1 {
+				margin: 30px 0px;
+				
+			}
 		}
 
 		& main {
@@ -69,15 +75,63 @@
 			}
 		}
 
-		& footer {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			background-color: rgba(41, 150, 88, 0.467);
+		& footer.score {
 
-			& h1 {
-				margin: 30px 0px;
-				
+			display: flex;
+			background-color: rosybrown;
+
+			& .js-player {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+
+				& #name {
+					font-weight: bold;	
+				}
+
+				& > div {
+					display: grid;
+					grid-template-columns: repeat(2, 1fr);
+					margin-top: 5px;
+					gap: 0px 10px;
+					font-weight: bold;
+
+					& #points::before {
+						content: 'Points: ';
+						font-weight: normal;
+					}
+
+					& #skip::before {
+						content: 'Skips: ';
+						font-weight: normal;
+					}
+
+					& #actual-skip::before {
+						content: 'Actual skip: ';
+						font-weight: normal;
+					}
+
+					& #counter::before {
+						content: 'Cards counter: ';
+						font-weight: normal;
+					}
+				}
+			}
+
+			& .players-queue {
+				display: flex;
+				flex-direction: column;
+				font-weight: bold;
+
+				& .player-II::before {
+					content: 'Player II: ';
+					font-weight: normal;
+				}
+
+				& .player-III::before {
+					content: 'Player III: ';
+					font-weight: normal;
+				}
 			}
 		}
 	}

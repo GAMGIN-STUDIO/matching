@@ -8,7 +8,7 @@ export class Player {
 		this.actualSkip = false;
 		this.skip = 0;
 		this.points = 0;
-		this.id = index  + 'aa' + this.generatePlayerID();
+		this.id = 'aa' + index  + 'aa' + this.generatePlayerID();
 		this.onTurn = false;
 		this.stopTurn = false;
 		this.counter = 0;
@@ -23,38 +23,49 @@ export class Player {
 		return result;
 	}
 
-	addSkip() {
-		this.skip++;
-	}
-
-	addPoints() {
-		this.points++;
-	}
-
-	writePlayerOnTurn(playerOnTurnTag, playerID) {
-		const playerTag = document.querySelector(`${playerID}`);
-		if(playerOnTurnTag.matches(`#${playerID}` && playerID === Player.playerOnTurn.id)){
-			playerTag.classList.add('active');
+	static writePlayerOnTurn(playerOnTurnTag, playerID) {
+		// const playerTag = document.querySelector(`${playerID}`);
+		if(playerOnTurnTag.id === playerID && Player.playerOnTurn.id === playerID){
+			// playerTag.classList.add('active');
 			document.querySelector('#name').innerText = Player.playerOnTurn.name;
 			document.querySelector('#points').innerText = Player.playerOnTurn.points;
 			document.querySelector('#skip').innerText = Player.playerOnTurn.skip;
-			document.querySelector('#actual-skip').innerText = Player.playerOnTurn.actualSkip ? 'Yes' : 'No';;
+			document.querySelector('#actual-skip').innerText = Player.playerOnTurn.actualSkip ? 'Yes' : 'No';
 			document.querySelector('#counter').innerText = Player.playerOnTurn.counter;
 		}else{
-			throw new Error('Player tag parameters do not match the palyer on turn');
+			throw new Error('Player tag parameters do not match the player on turn');
 		}
 	}
 
-	writePlayersQueue(){
-		// player who will be on turn after the actual player on turn
-		const playerII = document.querySelector('.player-II');
-		playerII.innerText = this.gamePlayers(0).name; // at this moment the player is on the first place in the array on index 0
-		playerII.id = this.gamePlayers(0).id;
-		// player who will be on turn after the palyerII 
-		const playerIII = document.querySelector('.player-III');
-		playerIII.innerText = this.gamePlayers(1).name; // at this moment the player is on the second place in the array on index 1
-		playerIII.id = this.gamePlayers(1).id;
+	static pointsMethod(){
+		document.querySelector('#points').innerText = Player.playerOnTurn.points;
+	}
+	
+	static skipMethod() {
+		document.querySelector('#skip').innerText = Player.playerOnTurn.skip;
+	}
 
+	static actualSkipMethod() {
+		document.querySelector('#actual-skip').innerText = Player.playerOnTurn.actualSkip ? 'Yes' : 'No';
+	}
+
+	static counterMethod() {
+		document.querySelector('#counter').innerText = Player.playerOnTurn.counter;
+	}
+
+	static writePlayersQueue(){
+		const playerII = document.querySelector('.player-II');
+		const playerIII = document.querySelector('.player-III');
+		if(playerII instanceof HTMLElement && playerIII instanceof HTMLElement){
+			// player who will be on turn after the actual player on turn
+			playerII.innerText = this.gamePlayers[0].name; // at this moment the player is on the first place in the array on index 0
+			playerII.id = this.gamePlayers[0].id;
+			// player who will be on turn after the palyerII 
+			playerIII.innerText = this.gamePlayers[1].name; // at this moment the player is on the second place in the array on index 1
+			playerIII.id = this.gamePlayers[1].id;
+		}else {
+			throw new Error('Player queue tags are not found in the DOM');
+		}
 	}
 
 	static setPlayerOnTurn(player) {
@@ -64,7 +75,8 @@ export class Player {
 		const playerOnTurnTag = document.querySelector('.js-player');
 		if(playerOnTurnTag instanceof HTMLElement) {
 			playerOnTurnTag.id = `${this.playerOnTurn.id}`;
-			writePlayerOnTurn(playerOnTurnTag, this.playerOnTurn.id);
+			this.writePlayerOnTurn(playerOnTurnTag, this.playerOnTurn.id);
+			this.writePlayersQueue();
 		}else {
 			throw new Error('Player tag is not found in the DOM');
 		}

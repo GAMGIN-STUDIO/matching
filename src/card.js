@@ -58,6 +58,7 @@ export class Card {
 					if(sibling !== undefined){
 						if(sibling.playerID === this.playerID && sibling.holdFlag === true){
 							Player.playerOnTurn.points++;
+							Player.pointsMethod();
 							actualPlayer = this.gamePlayers.pop();
 							this.gamePlayers.unshift(actualPlayer);
 							this.removePairCards();							
@@ -65,16 +66,19 @@ export class Card {
 						}else if (sibling.playerID !== this.playerID){
 							this.removePairCards();
 							Player.playerOnTurn.counter++;
+							Player.counterMethod();
 							if(Player.playerOnTurn.counter === 2) {
 								Player.playerOnTurn.stopTurn = true; // stop player's turn only after finding pair card but not his own for 2 times
 							}
 							if(this.gameTurns > 9){
 								Player.playerOnTurn.skip++;
+								Player.skipMethod();
 								Player.playerOnTurn.actualSkip = true;
+								Player.actualSkipMethod();
 
 								console.log('You found the pair card but first one is NOT yours. You will be skipped (whole and actual skip)');
 							}else{
-								console.log('You found NOT your pair card, but game not reach 10 turns yet. You will not be skipped.');
+								console.log('You found pair card, which is NOT yours, but game not reach 10 turns yet. You will not be skipped.');
 							}
 						}
 					}else{
@@ -101,6 +105,7 @@ export class Card {
 					if(this.face === false){
 						this.face = true;
 						Player.playerOnTurn.points--;
+						Player.pointsMethod();
 						console.log('Now you can see the card, but you lose 1 point for this action!');
 					}else{
 						this.face = false;

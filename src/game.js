@@ -55,6 +55,13 @@ export class Game {
 		this.headerHeight.style = `${this.headerHeight.value}px`;
 		document.querySelector('header').style.height = this.headerHeight.style;
 
+		// footer - score tag parameters
+		this.scoreTagStyles = {
+			gap: 40,
+			paddingX: 30,
+			paddingY: 15
+		}
+
 		// control panel height size in column direction
 		this.ctrlPanelHeight = {
 			value: 40
@@ -255,6 +262,9 @@ export class Game {
 
 		// table size managment
 		let saveSize = Math.min(this.sizeObject.width, this.sizeObject.height) - (2 * this.sizeObject.tablePadding); // savesize for cards, has to be lower about 2 paddings of the table
+		const scoreTag = document.querySelector('footer.score');
+		scoreTag.style.justifyContent = 'space-between';
+		scoreTag.style.padding = `${this.scoreTagStyles.paddingY}px ${this.scoreTagStyles.paddingX}px`;
 		if(saveSize >= this.sizeComfort.comfort) {
 			saveSize = saveSize - 150; // 150 = just for game buttons (flex direction row)
 			document.querySelector('main').style.flexDirection = 'row';
@@ -266,6 +276,13 @@ export class Game {
 			document.querySelector('main').style.flexDirection = 'column';
 			document.querySelector('main').style.alignItems = 'center';
 			document.querySelector('body').classList.add('mobile'); // main is column but control panel is row
+			if(this.sizeObject.width < (380 + (2 * this.scoreTagStyles.paddingX))){
+				scoreTag.style.flexDirection = 'column';
+				scoreTag.style.alignItems = 'center';
+				scoreTag.style.justifyContent = 'flex-start';
+				scoreTag.style.gap = `${this.scoreTagStyles.gap}px 0px`; // // dynamic gap for rows, but no gap between columns - we are in column direction
+
+			}
 		}
 		this.tableTag.style.width = `${saveSize}px`;
 		this.tableTag.style.height = `${saveSize}px`;
@@ -327,7 +344,9 @@ export class Game {
 				const player = Player.playerOnTurn;
 				if(player.skip > 0 && player.points >= 3) {
 					player.skip--;
+					Player.skipMethod();
 					player.points -= 3;
+					Player.pointsMethod();
 					console.log('You used reskip button! You lose 3 points but also 1 skip for reward!');
 				}
 			})
@@ -427,10 +446,15 @@ export class Game {
 			console.log(error);
 		}
 		if(!this.isError) {
-			this.playerTurn();
-			const gameTimer = this.gameTimerF();
-			this.turnTimerF(gameTimer);
-			console.log("game started");
+			try{
+				this.playerTurn();
+				const gameTimer = this.gameTimerF();
+				this.turnTimerF(gameTimer);
+				console.log("game started");
+			}catch(error){
+				this.isError = true;
+				console.log(error);
+			}
 		}
 	}
 
@@ -461,11 +485,17 @@ export class Game {
 				}
 				this.turnTime = 11; // for more fluent time display and 10 seconds turn value show
 				this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
-				if(this.gameTime > 1){
+				if(this.gameTime > 1 && !this.isError){
 					setTimeout(() => {
 						let isSkipped = true;
 						while(isSkipped){
-							isSkipped = this.playerTurn();
+							try{
+								isSkipped = this.playerTurn();
+							}catch(error){
+								this.isError = true;
+								console.log(error);
+								break; // IMPORTANT - if error during while cycle, it would kill browser without break
+							}
 						}
 						const newGameTimer = this.gameTimerF();
 						this.turnTimerF(newGameTimer);

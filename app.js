@@ -6,6 +6,6 @@ game.prepare();
 game.gameButtonsService();
 game.cardsService();
 game.mountGame();
-// game.start();
+game.start();
 
 console.log(game);
