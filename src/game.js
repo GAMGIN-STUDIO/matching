@@ -30,6 +30,15 @@ export class Game {
 		this.turnTimeFormatted = "";    
 		this.turns = 0;
 
+		// game massage tag
+		this.gameMessageTag = document.getElementById('game-message');
+
+		// time tags object
+		this.timeTagsObject = {
+			gameTimeTag: this.getTimeTag('game'),
+			turnTimeTag: this.getTimeTag('turn'),
+		}
+
 		// game buttons managment
 		this.revealClick = false;
  
@@ -276,7 +285,7 @@ export class Game {
 			document.querySelector('main').style.flexDirection = 'column';
 			document.querySelector('main').style.alignItems = 'center';
 			document.querySelector('body').classList.add('mobile'); // main is column but control panel is row
-			if(this.sizeObject.width < (380 + (2 * this.scoreTagStyles.paddingX))){
+			if(this.sizeObject.width < (500 + (2 * this.scoreTagStyles.paddingX))){ // 500 = cca 380 (player + queue) + cca 120 (time) + some tolerance
 				scoreTag.style.flexDirection = 'column';
 				scoreTag.style.alignItems = 'center';
 				scoreTag.style.justifyContent = 'flex-start';
@@ -347,7 +356,7 @@ export class Game {
 					Player.skipMethod();
 					player.points -= 3;
 					Player.pointsMethod();
-					console.log('You used reskip button! You lose 3 points but also 1 skip for reward!');
+					this.gameMessageTag.innerText = 'You used reskip button! You lose 3 points but also 1 skip for reward!';
 				}
 			})
 		}else{
@@ -450,7 +459,7 @@ export class Game {
 				this.playerTurn();
 				const gameTimer = this.gameTimerF();
 				this.turnTimerF(gameTimer);
-				console.log("game started");
+				this.gameMessageTag.innerText = 'Game started! Good luck!';
 			}catch(error){
 				this.isError = true;
 				console.log(error);
@@ -478,9 +487,9 @@ export class Game {
 				clearInterval(gameTimer);
 				clearInterval(interval);
 				if(this.cards.length > 0){
-					console.log("It's time to the next player's turn!");
+					this.gameMessageTag.innerText = "It's time to the next player's turn!";
 				}else{
-					console.log("All cards are removed from the table!");
+					this.gameMessageTag.innerText = "All cards are removed from the table!";
 					this.end();
 				}
 				this.turnTime = 11; // for more fluent time display and 10 seconds turn value show
@@ -509,20 +518,33 @@ export class Game {
 		const minutes = this.timeFormat(Math.floor(this.gameTime / 60));
 		const seconds = this.timeFormat(this.gameTime % 60);
 		this.gameTimeFormatted = `${minutes}:${seconds}`;
-		console.log(this.gameTimeFormatted);
+		this.timeTagsObject.gameTimeTag.innerText = `${this.gameTimeFormatted}`;
 	}
 
 	turnTimeToTime() {
 		if(this.turnTime > 0){
-			this.turnTimeFormatted = `turn time: ${this.timeFormat(this.turnTime)}`;
+			this.turnTimeFormatted = `${this.timeFormat(this.turnTime)}`;
 		}else{
-			this.turnTimeFormatted = `turn time: ${this.timeFormat(this.turnTime)} - ENDED`;
+			this.turnTimeFormatted = `${this.timeFormat(this.turnTime)} - ENDED`;
 		}
-		console.log(this.turnTimeFormatted);
+		this.timeTagsObject.turnTimeTag.innerText = `${this.turnTimeFormatted}`;
 	}
 
 	timeFormat(value) {
 		return value.toString().padStart(2, '0');		
+	}
+
+
+	getTimeTag(name) {
+		if(name === 'game'){
+			return document.getElementById('game-time');
+		}else if(name === 'turn') {
+			return document.getElementById('turn-time');
+		}else {
+			const errorTag =  document.createElement('span');
+			console.log('ERROR - WRONG TIME TAG NAME');
+			return errorTag;
+		} 
 	}
 
 	playerTurn() {
@@ -542,22 +564,21 @@ export class Game {
 		Player.setPlayerOnTurn(player);
 		// push the queued player back to the end
 		this.players.push(player);
-		console.log(player);
+		// console.log(player);
 
 		// actual skip managment
 		if(player.actualSkip === true){
 			player.actualSkip = false;
-			alert(`${player.name}'s turn will be skipped!`);
+			this.gameMessageTag.innerText = `${player.name}'s turn is skipped!`;
 			return true;
 		}else{
-			alert(`Next turn: ${player.name}`);
+			this.gameMessageTag.innerText = `You can play`;
 			return false;
 		}
 	}
 
 	end() {
-		console.log("game ended");
-		console.log(`Winner is ${this.findWinner()}`);
+		this.gameMessageTag.innerText = `GAME ENDED - Winner is ${this.findWinner()}`;
 	}
 
 	findWinner() {
@@ -575,7 +596,7 @@ export class Game {
 				});
 				if(toHoldCard !== undefined){
 					toHoldCard.holdFlag = true;
-					console.log(`${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`);
+					this.gameMessageTag.innerText = `${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`;
 				}
 			}else if(Player.playerOnTurn.counter === 2){
 				this.autoHideCards(Player.playerOnTurn.id);

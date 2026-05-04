@@ -75,15 +75,34 @@
 			}
 		}
 
+		& summary {
+			min-height: 30px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: sienna;
+			font-weight: bold;
+
+			#message::before {
+				content: 'Game message: ';
+				font-weight: normal;
+			}
+		}
+
 		& footer.score {
 
 			display: flex;
 			background-color: rosybrown;
 
-			& .js-player {
+			& > div {
 				display: flex;
 				flex-direction: column;
+				justify-content: center;
 				align-items: center;
+				font-weight: bold;
+			}
+
+			& .js-player {
 
 				& #name {
 					font-weight: bold;	
@@ -118,10 +137,20 @@
 				}
 			}
 
+			& .time {
+				
+				& #game-time::before {
+					content: 'Game time: ';
+					font-weight: normal;
+				}
+
+				& #turn-time::before {
+					content: 'Turn time: ';
+					font-weight: normal;
+				}
+			}
+
 			& .players-queue {
-				display: flex;
-				flex-direction: column;
-				font-weight: bold;
 
 				& .player-II::before {
 					content: 'Player II: ';
