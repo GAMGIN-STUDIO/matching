@@ -53,22 +53,19 @@ export class Player {
 		document.querySelector('#counter').innerText = Player.playerOnTurn.counter;
 	}
 
-	static writePlayersQueue(){
-		const playerII = document.querySelector('.player-II');
-		const playerIII = document.querySelector('.player-III');
-		if(playerII instanceof HTMLElement && playerIII instanceof HTMLElement){
-			// player who will be on turn after the actual player on turn
-			playerII.innerText = this.gamePlayers[0].name; // at this moment the player is on the first place in the array on index 0
-			playerII.id = this.gamePlayers[0].id;
-			// player who will be on turn after the palyerII 
-			playerIII.innerText = this.gamePlayers[1].name; // at this moment the player is on the second place in the array on index 1
-			playerIII.id = this.gamePlayers[1].id;
-		}else {
-			throw new Error('Player queue tags are not found in the DOM');
+	static writePlayersQueue(playersQueueTags){
+		for(let i = 0; i < playersQueueTags.length; i++){
+			if(playersQueueTags[i] instanceof HTMLElement){
+				// player who will be on turn after the actual player on turn (and player who will be on turn after the palyerII)
+				playersQueueTags[i].innerText = this.gamePlayers[i].name; // at this moment the player is on the first place in the array on index 0 (and at this moment the player is on the second place in the array on index 1)
+				playersQueueTags[i].id = this.gamePlayers[i].id;
+			}else {
+				throw new Error('Player queue tags are not found in the DOM (NOT MOUNTED)');
+			}
 		}
 	}
 
-	static setPlayerOnTurn(player) {
+	static setPlayerOnTurn(player, playersQueueTags) {
 		this.playerOnTurn = player;
 		this.playerOnTurn.stopTurn = false; // reset stopTurn for next turns
 		this.playerOnTurn.counter = 0; // reset counter for next turns
@@ -76,7 +73,7 @@ export class Player {
 		if(playerOnTurnTag instanceof HTMLElement) {
 			playerOnTurnTag.id = `${this.playerOnTurn.id}`;
 			this.writePlayerOnTurn(playerOnTurnTag, this.playerOnTurn.id);
-			this.writePlayersQueue();
+			this.writePlayersQueue(playersQueueTags);
 		}else {
 			throw new Error('Player tag is not found in the DOM');
 		}

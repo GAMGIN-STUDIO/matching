@@ -8,7 +8,7 @@
     { "id": 6, "color": "#bfd926", "icon": "fa-hippo" },
     { "id": 7, "color": "#96d926", "icon": "fa-horse" },
     { "id": 8, "color": "#6dd926", "icon": "fa-dragon" },
-    { "id": 9, "color": "#44d926", "icon": "fa-otter" },
+    { "id": 9, "color": "#44d926", "icon": "fa-cow" },
     { "id": 10, "color": "#26d93a", "icon": "fa-kiwi-bird" },
 
     { "id": 11, "color": "#26d963", "icon": "fa-apple-whole" },
@@ -38,7 +38,7 @@
     { "id": 33, "color": "#8cff4d", "icon": "fa-screwdriver" },
     { "id": 34, "color": "#5fff4d", "icon": "fa-gavel" },
     { "id": 35, "color": "#4dff73", "icon": "fa-toolbox" },
-    { "id": 36, "color": "#4dffa0", "icon": "fa-ladder" },
+    { "id": 36, "color": "#4dffa0", "icon": "fa-book" },
     { "id": 37, "color": "#4dffcc", "icon": "fa-bolt" },
     { "id": 38, "color": "#4dffff", "icon": "fa-lightbulb" },
     { "id": 39, "color": "#4dccff", "icon": "fa-camera" },

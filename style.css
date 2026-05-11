@@ -50,8 +50,17 @@
 				background-color: bisque;
 
 				& .js-card {
+					display: flex;
+					justify-content: center;
+					align-items: center;
 					flex-shrink: 0;
 					border-radius: 4px;
+					
+					transition: transform .25s, opacity 2.5s;
+				}
+
+				& .js-card.flipping {
+					transform: scaleX(0);
 				}
 			}
 

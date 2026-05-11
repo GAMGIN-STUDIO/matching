@@ -3,9 +3,25 @@ import { Player } from "./player.js";
 
 export class Game {
 
-	constructor(dataThemes) {
+	constructor(dataThemes, admin = false) {
 		// admin and other managment
-		this.admin = true;
+		this.admin = admin;
+		let gameTime = null;
+		let originTurnTime = null;
+		if(!this.admin){
+			gameTime = Number(prompt('Enter game time in minutes (1-60):'));
+			originTurnTime = Number(prompt('Enter turn time in seconds (5-10):'));
+			if(					
+					(gameTime === null || originTurnTime === null)||
+					(Number.isNaN(gameTime) || Number.isNaN(originTurnTime)) ||
+					(gameTime < 1 || gameTime > 60) ||
+					(originTurnTime < 5 || originTurnTime > 10) ||
+					(!Number.isInteger(gameTime) || !Number.isInteger(originTurnTime))
+				){
+					gameTime = 20; // default game time in minutes
+					originTurnTime = 10; // default turn time in seconds
+				};
+		}
 
 		// game init managament
 		this.themes = dataThemes.themes; 
@@ -20,15 +36,16 @@ export class Game {
 			mountPoint: false,
 			tableTag: false,
 			controlPanelTag: false,
-			tiltLibrary: false
+			// tiltLibrary: false
 		};
 
 		// game time managment
-		this.gameTime = 3601; // hour in seconds + 1 second for more fluent time display
-		this.turnTime = 11; // + 1 second for more fluent time display and 10 seonds turn value show
+		this.gameTime = (gameTime * 60) + 1; // 20 minutes in seconds + 1 second for more fluent time display
+		this.originTurnTime = originTurnTime + 1; // + 1 second for more fluent time display and 10 seonds turn value show
+		this.turnTime = this.originTurnTime; 
 		this.gameTimeFormatted = "";
 		this.turnTimeFormatted = "";    
-		this.turns = 0;
+		this.turns = this.admin ? 10 : 0;
 
 		// game massage tag
 		this.gameMessageTag = document.getElementById('game-message');
@@ -84,10 +101,10 @@ export class Game {
 
 	// game init managment
 
-	static async init() {
+	static async init(admin) {
 		const res = await fetch("./src/cards/themes.json");
 		const json = await res.json();
-		return new Game(json);
+		return new Game(json, admin);
 	}
 
 	// GAME MANAGMENT
@@ -95,24 +112,29 @@ export class Game {
 	// init part and help functions
 
 	playersInit() {
-		let numPlayers = null;
-		while(
-				numPlayers === null ||
-				Number.isNaN(numPlayers) ||
-				numPlayers < 2 ||
-				numPlayers > 3 ||
-				!Number.isInteger(numPlayers)
-		) {
-			numPlayers = this.admin ? 3 : Number(prompt("Enter the number of players (2-3):"));
+		try{
+			let numPlayers = null;
+			while(
+					numPlayers === null ||
+					Number.isNaN(numPlayers) ||
+					numPlayers < 2 ||
+					numPlayers > 3 ||
+					!Number.isInteger(numPlayers)
+			) {
+				numPlayers = this.admin ? 2 : Number(prompt("Enter the number of players (2-3):"));
+			}
+			for (let i = 0; i < numPlayers; i++) {
+				const playerName = this.admin ? `Player ${i+1}` : prompt(`Enter the name of player ${i+1}:`)
+				const player = new Player(playerName, i+1);
+				this.players.push(player);
+			}
+			this.players = this.shuffle(this.players);
+			Card.getReferenceToPlayers(this.players);
+			Player.getReferenceToPlayers(this.players);	
+		}catch(error){
+			this.isError = true;
+			console.log(error);
 		}
-		for (let i = 0; i < numPlayers; i++) {
-			const playerName = this.admin ? `Player ${i+1}` : prompt(`Enter the name of player ${i+1}:`)
-			const player = new Player(playerName, i+1);
-			this.players.push(player);
-		}
-		this.players = this.shuffle(this.players);
-		Card.getReferenceToPlayers(this.players);
-		Player.getReferenceToPlayers(this.players);
 	}
 
 	doubleArray(array) {
@@ -158,7 +180,7 @@ export class Game {
 			let odd = true; // for black&grey color pattern
 			// use cardThemes array (right length, cleaned & contains only pairs) for creating deck of cards
 			for (let i = 0; i < cardThemes.length; i++) {
-				this.cards.push(new Card(cardThemes[i], odd));
+				this.cards.push(new Card(cardThemes[i], odd, this.admin));
 				// part for black&grey color pattern
 				oddFlag++;
 				if(oddFlag === this.gridIndex){
@@ -395,6 +417,47 @@ export class Game {
 		}
 	}
 
+	// players queue service
+
+	createEachPlayerOfQueue() {
+		const playersQueueTags = [];
+		for(let i = 0; i < this.players.length - 1; i++) {
+			const className = (i === 0) ? 'player-II' : 'player-III';
+			const playerOfQueueTag = document.createElement('span');
+			playerOfQueueTag.classList.add(`${className}`);
+			playerOfQueueTag.id = '';
+			if(playerOfQueueTag instanceof HTMLElement){
+				playersQueueTags.push(playerOfQueueTag);
+			}else{
+				throw new Error(`PLAYER OF QUEUE TAG NOT CORRECT - ${i+1}. player of queue tag is not correctly created `);
+			}
+		}
+		this.playersQueueTags = playersQueueTags;
+	}
+
+	playersQueueServicePlusMount() {
+		if(!this.isError) {
+			try{
+				this.createEachPlayerOfQueue();
+				this.playersQueueParentTag = document.querySelector('.players-queue');
+				if(this.playersQueueParentTag instanceof HTMLElement) {
+					for (const playerOfQueueTag of this.playersQueueTags) {
+						if(playerOfQueueTag instanceof HTMLElement) {
+							this.playersQueueParentTag.appendChild(playerOfQueueTag);
+						}else{
+							throw new Error('PLAYER OF QUEUE TAG NOT CORRECT - Cannot launch players queue service');
+						}
+					}
+				}else{
+					throw new Error('PARENT QUEUE TAG NOT CORRECT - Cannot launch players queue service');
+				}
+			}catch(error){
+				this.isError = true;
+				console.log(error);
+			}
+		}
+	}
+
 	// game mount managment - mounting game components (table with cards and game buttons) to the DOM
 
 	findMountPoint() {
@@ -409,7 +472,6 @@ export class Game {
 
 	mountTable() {
 		try{
-			this.findMountPoint();
 			this.mountPoint.appendChild(this.tableTag);
 			this.mountObject['tableTag'] = true;
 		}catch(error){
@@ -420,7 +482,6 @@ export class Game {
 
 	mountGameButtons() {
 		try{
-			this.findMountPoint();
 			this.mountPoint.prepend(this.controlPanelTag);
 			this.mountObject['controlPanelTag'] = true;
 		}catch(error){
@@ -431,9 +492,11 @@ export class Game {
 
 	mountGame() {
 		if(!this.isError) {
+			this.findMountPoint();
 			this.mountTable();
 			this.mountGameButtons();
-			this.tiltLaunch();
+			this.playersQueueServicePlusMount();
+			// this.tiltLaunch();
 		}
 	}
 
@@ -492,7 +555,7 @@ export class Game {
 					this.gameMessageTag.innerText = "All cards are removed from the table!";
 					this.end();
 				}
-				this.turnTime = 11; // for more fluent time display and 10 seconds turn value show
+				this.turnTime = this.originTurnTime; // for more fluent time display and 10 seconds turn value show
 				this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
 				if(this.gameTime > 1 && !this.isError){
 					setTimeout(() => {
@@ -561,7 +624,7 @@ export class Game {
 		// set current player onTurn property to true
 		player.onTurn = true;
 		// set player on turn to static property of Player class for easier access
-		Player.setPlayerOnTurn(player);
+		Player.setPlayerOnTurn(player, this.playersQueueTags); // at this moment the players array length is equal to number of players in queue
 		// push the queued player back to the end
 		this.players.push(player);
 		// console.log(player);
@@ -589,8 +652,8 @@ export class Game {
 	}
 							
 	holdFunc(){
-		if(this.turns > 0){
-			if(Player.playerOnTurn.counter === 1 || Player.playerOnTurn.counter === 0){
+		if(this.turns > (this.admin ? 10 : 0)){
+			if((Player.playerOnTurn.counter === 1 || Player.playerOnTurn.counter === 0) && Player.playerOnTurn.stopTurn === false){
 				const toHoldCard = this.cards.find((card) => {
 					return card.face === true && card.playerID === Player.playerOnTurn.id;
 				});
@@ -598,20 +661,10 @@ export class Game {
 					toHoldCard.holdFlag = true;
 					this.gameMessageTag.innerText = `${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`;
 				}
-			}else if(Player.playerOnTurn.counter === 2){
-				this.autoHideCards(Player.playerOnTurn.id);
+			}else if(Player.playerOnTurn.counter === 2 || (Player.playerOnTurn.counter === 1 && Player.playerOnTurn.stopTurn === true)){
+				Card.autoHideCards(Player.playerOnTurn.id);
 			}
 		}
-	}
-
-	autoHideCards(pID) {
-		this.cards.forEach((card) => {
-			if(card.face === true && card.playerID === pID){
-				card.face = false;
-				card.playerID = '';
-				card.holdFlag = false; // always during hiding card for sure
-			}
-		});
 	}
 
 	// TILT MANAGMENT
