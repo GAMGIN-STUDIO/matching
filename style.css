@@ -36,7 +36,8 @@
 			background-color: rgba(41, 150, 88, 0.467);
 
 			& h1 {
-				margin: 30px 0px;
+				font-size: larger;
+				margin: 0px;
 				
 			}
 		}
@@ -45,7 +46,7 @@
 			display: flex;
 			background-color: darkkhaki;
 
-			& section.table {
+			& section.js-table {
 				display: grid;
 				background-color: bisque;
 
@@ -85,17 +86,14 @@
 		}
 
 		& summary {
-			min-height: 30px;
+			height: 45px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			background-color: sienna;
 			font-weight: bold;
-
-			#message::before {
-				content: 'Game message: ';
-				font-weight: normal;
-			}
+			font-size: 11px;
+			padding: 5px 10px;
 		}
 
 		& footer.score {
@@ -181,7 +179,7 @@
 
 		& main {
 
-			& section.table {
+			& section.js-table {
 				
 				& .js-card {
 					color: black;
@@ -208,7 +206,7 @@
 
 		& main {
 
-			& section.table {
+			& section.js-table {
 				
 				& .js-card {
 					color: black;

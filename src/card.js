@@ -10,8 +10,10 @@ export class Card {
 		stop: false
 	};
 	static cardSize;
+	static generalRevealFlag = false;
+	static gameMessageTag;
 
-	constructor(theme, odd, admin = false) {
+	constructor(theme, odd, admin = false, gameMessageTag) {
 		this.back = odd ? "black" : "grey"; // condition for black&white color pattern decision
 		this.border = false;
 
@@ -22,6 +24,9 @@ export class Card {
 		this.playerID = '';
 		this.holdFlag = false;
 		this.adminFlag = admin;
+		this.revealFlag = false;
+
+		Card.gameMessageTag = gameMessageTag;
 	}
 
 	createCardTag(){
@@ -75,7 +80,7 @@ export class Card {
 							const actualPlayer = Card.gamePlayers.pop();
 							Card.gamePlayers.unshift(actualPlayer);
 							this.removePairCards();
-							console.log('You found your own pair card! You earned plus 1 point and you can continue in your turn!');
+							Card.gameMessageTag.innerText = 'You found your own pair card! You earned plus 1 point and you can continue in your turn!';
 						}else if (sibling.playerID !== this.playerID){
 							this.removePairCards();
 							if((Card.gameTurns > 9 && Card.gamePlayers.length > 2) || (Card.gameTurns > 6 && Card.gamePlayers.length == 2)){
@@ -83,47 +88,64 @@ export class Card {
 								Player.skipMethod();
 								Player.playerOnTurn.actualSkip = true;
 								Player.actualSkipMethod();
-								console.log('You found the pair card but first one is NOT yours. You will be skipped (general and actual skip)');
+								Card.gameMessageTag.innerText = 'You found the pair card but first one is NOT yours. You will be skipped (general and actual skip)';
 							}else{
-								console.log('You found pair card, which is NOT yours, but game not reach 10 turns yet. You will not be skipped.');
+								Card.gameMessageTag.innerText = 'You found pair card, which is NOT yours, but game not reach 10 turns yet. You will not be skipped.';
 							}
 						}else{
 							this.removePairCards();	
-							console.log('You found pair card, which is yours, but first one was not hold on the table. You will not earn points');
+							Card.gameMessageTag.innerText = 'You found pair card, which is yours, but first one was not hold on the table. You will not earn points';
 						}
 					}else{
 						// card can stay in the game
-						console.log(this.isHoldOnTable(Player.playerOnTurn.id));
 						if(this.isHoldOnTable(Player.playerOnTurn.id)){
 							Player.playerOnTurn.stopTurn = true; // stop player's turn also after one card turned without pair but with hold card from last turns
-							console.log('You have active hold card on the table and you turned the card without pair actually, no more cards you will may turn');
+							Card.gameMessageTag.innerText = 'You have active hold card on the table and you turned the card without pair actually, no more cards you will may turn';
 						}else{
-							console.log('You turned the card without pair actually, you can turn one more card or wait rest of the time till next players turn');
+							Card.gameMessageTag.innerText = 'You turned the card without pair actually, you can turn one more card or wait rest of the time till next players turn';
 						};
 					}
 				}else if(this.face === false && this.playerID === '' && Card.revealObject.click === false && Player.playerOnTurn.stopTurn === true){
-					console.log('You cannot turn another card for earn points');
+					Card.gameMessageTag.innerText = 'You cannot turn another card for earn points';
 				}else if(this.face  === true && this.playerID === Player.playerOnTurn.id && Card.revealObject.click === false){
 					// option to turn card back if it's already turned by the same player
 					this.face = false;
 					this.playerID = '';
 					this.holdFlag = false; // always during hiding card
 					this.flipCard();
-				}else if( this.face === true && this.playerID !== Player.playerOnTurn.id && Card.revealObject.click === false){
+				}else if( this.face === true && this.playerID !== Player.playerOnTurn.id && Card.revealObject.click === false && this.revealFlag === false){
 					// warning for incompetent player action
-					console.log('This card is turned by another player. Please choose another CARD!');
-				}else if(this.face === false && this.playerID === '' && Card.revealObject.click === true) {
+					Card.gameMessageTag.innerText = 'This card is turned by another player. Please choose another CARD!';
+				}else if((this.face === false || this.face === true) && this.playerID === '' && Card.revealObject.click === true) {
 					// reveal managment
-					if(this.face === false){
+					if(this.face === false && Player.playerOnTurn.points > 0){
 						this.face = true;
+						this.revealFlag = true;
+						this.flipCard();
 						Player.playerOnTurn.points--;
 						Player.pointsMethod();
-						console.log('Now you can see the card, but you lose 1 point for this action!');
-					}else{
+						Card.gameMessageTag.innerText = 'Now you can see the card, but you lose 1 point for this action!';
+						if(Player.playerOnTurn.points == 0){
+							Card.revealObject.stop = true; // stop revel option in the hiding card moment,, during revealMethod it would be mistake (too early)
+							Card.gameMessageTag.innerText = 'To use reveal option for another card you have to earns points again';
+						}
+					}else if(this.face === true && Player.playerOnTurn.points >= 0){
 						this.face = false;
-						Card.revealObject.stop = true; // stop revel option in the hiding card moment,, during revealLaunch it would be mistake (too early)
-						console.log('To use reveal option for another card you have to wait to your next turn');
+						this.revealFlag = false;
+						this.flipCard();
+					}else if(Card.revealObject.stop == true){
+						Card.gameMessageTag.innerText = 'To use reveal option for another card you have to earns points again';
+					}else{
+						console.log('unexpected case')
 					}
+				}else if(this.face === true && this.playerID === '' && Card.revealObject.click === false && this.revealFlag === true && Player.playerOnTurn.points >= 0) {
+					// option for hiding revealed cards in turned OFF reveal mode
+					this.face = false;
+					this.revealFlag = false;
+					this.flipCard();
+				}else if(this.face === true && this.playerID !== '' && Card.revealObject.click === true && this.holdFlag === true) {
+					// revealing the holding card
+					Card.gameMessageTag.innerText = 'You cannot use revealing on card, which is used to holding!'
 				}else{
 					console.log('different scenario - maybe something went wrong? or unexpected scenario or bug?')
 				}
@@ -145,9 +167,20 @@ export class Card {
 		this.gameTurns = amount;
 	}
 
-	static revealLaunch() {
-		this.revealObject.click = true;
-		console.log('You used reveal button! You can click on one card to reveal in addition to your turn');
+	static revealMethod() {
+		if(this.revealObject.click === false && Player.playerOnTurn.points > 0){
+			this.revealObject.click = true;
+			Card.gameMessageTag.innerText = 'You turn ON the reveal mode! You can click on one card to reveal in addition to your turn';
+			if(this.generalRevealFlag === false){
+				this.generalRevealFlag = true;
+			}
+		}else if(this.revealObject.click === false && Player.playerOnTurn.points === 0){
+			Card.gameMessageTag.innerText = "You cannout turn ON the reveal mode - you don't have enough points!!";
+		}else{
+			this.revealObject.click = false;
+			Card.gameMessageTag.innerText = 'You turn OFF the reveal mode!';
+		}
+		
 	}
 
 	flipCard() {
@@ -168,10 +201,12 @@ export class Card {
 	}
 
 	counterCheck() {
-		Player.playerOnTurn.counter++;
-		Player.counterMethod();
-		if(Player.playerOnTurn.counter === 2) {
-			Player.playerOnTurn.stopTurn = true; // stop player's turn after two cards turned without pair
+		if(Card.revealObject.click === false){ // for true value of click it would be nonsense to count turns because of reveal option
+			Player.playerOnTurn.counter++;
+			Player.counterMethod();
+			if(Player.playerOnTurn.counter === 2) {
+				Player.playerOnTurn.stopTurn = true; // stop player's turn after two cards turned without pair
+			}
 		}
 	}
 
@@ -203,12 +238,13 @@ export class Card {
 		}
 	}
 
-	static autoHideCards(pID) {
+	static autoHideCards(pID = '') {
 		Card.gameCards.forEach((card) => {
-			if(card.face === true && card.playerID === pID && card.holdFlag === false){
+			if((pID !== '' && card.face === true && card.playerID === pID && card.holdFlag === false) || card.revealFlag === true){
 				card.face = false;
 				card.playerID = '';
 				card.holdFlag = false; // always during hiding card for sure
+				card.revealFlag = false; // reset reveal flag for sure
 				card.flipCard();
 			}
 		});

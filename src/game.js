@@ -21,6 +21,9 @@ export class Game {
 					gameTime = 20; // default game time in minutes
 					originTurnTime = 10; // default turn time in seconds
 				};
+		}else{
+			gameTime = 20; // admin game time in minutes
+			originTurnTime = 10; // admin turn time in seconds
 		}
 
 		// game init managament
@@ -36,7 +39,7 @@ export class Game {
 			mountPoint: false,
 			tableTag: false,
 			controlPanelTag: false,
-			// tiltLibrary: false
+			tiltLibrary: false
 		};
 
 		// game time managment
@@ -55,9 +58,6 @@ export class Game {
 			gameTimeTag: this.getTimeTag('game'),
 			turnTimeTag: this.getTimeTag('turn'),
 		}
-
-		// game buttons managment
-		this.revealClick = false;
  
 		// responsive managment
 		this.sizeObject = {
@@ -76,7 +76,7 @@ export class Game {
 
 		// header height size
 		this.headerHeight = {
-			value: 60
+			value: 45
 		}
 		this.headerHeight.style = `${this.headerHeight.value}px`;
 		document.querySelector('header').style.height = this.headerHeight.style;
@@ -180,7 +180,7 @@ export class Game {
 			let odd = true; // for black&grey color pattern
 			// use cardThemes array (right length, cleaned & contains only pairs) for creating deck of cards
 			for (let i = 0; i < cardThemes.length; i++) {
-				this.cards.push(new Card(cardThemes[i], odd, this.admin));
+				this.cards.push(new Card(cardThemes[i], odd, this.admin, this.gameMessageTag));
 				// part for black&grey color pattern
 				oddFlag++;
 				if(oddFlag === this.gridIndex){
@@ -276,7 +276,7 @@ export class Game {
 
 	createTableTag() {
 		const tableTag = document.createElement('section');
-		tableTag.classList.add('table');
+		tableTag.classList.add('js-table');
 		this.tableTag = tableTag;
 	}
 
@@ -359,12 +359,14 @@ export class Game {
 	createReskipTag() {
 		const reskipTag = document.createElement('div');
 		reskipTag.innerText = "Reskip";
+		reskipTag.style.cursor = 'pointer';
 		this.reskipTag = reskipTag;
 	}
 
 	createRevealTag() {
 		const revealTag = document.createElement('div');
 		revealTag.innerText = "Reveal";
+		revealTag.style.cursor = 'pointer';
 		this.revealTag = revealTag;
 	}
 
@@ -379,6 +381,10 @@ export class Game {
 					player.points -= 3;
 					Player.pointsMethod();
 					this.gameMessageTag.innerText = 'You used reskip button! You lose 3 points but also 1 skip for reward!';
+				}else if(player.skip == 0){
+					this.gameMessageTag.innerText = "You have no skips, so you can't substract none of it!";
+				}else if(player.points < 3){
+					this.gameMessageTag.innerText = "You don't have enough points for reskip operation!";
 				}
 			})
 		}else{
@@ -390,9 +396,7 @@ export class Game {
 		if(this.revealTag instanceof HTMLElement) {
 			this.revealTag.addEventListener('click', () => {
 				// reveal managment
-				if(Card.revealObject.stop === false){
-					Card.revealLaunch();
-				}
+				Card.revealMethod();
 			})
 		}else{
 			throw new Error('REVEAL TAG NOT INITIALIZED - Cannot init reveal listener');
@@ -496,7 +500,7 @@ export class Game {
 			this.mountTable();
 			this.mountGameButtons();
 			this.playersQueueServicePlusMount();
-			// this.tiltLaunch();
+			this.tiltLaunch();
 		}
 	}
 
@@ -551,27 +555,27 @@ export class Game {
 				clearInterval(interval);
 				if(this.cards.length > 0){
 					this.gameMessageTag.innerText = "It's time to the next player's turn!";
+					this.turnTime = this.originTurnTime; // for more fluent time display and 10 seconds turn value show
+					this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
+					if(this.gameTime > 1 && !this.isError){
+						setTimeout(() => {
+							let isSkipped = true;
+							while(isSkipped){
+								try{
+									isSkipped = this.playerTurn();
+								}catch(error){
+									this.isError = true;
+									console.log(error);
+									break; // IMPORTANT - if error during while cycle, it would kill browser without break
+								}
+							}
+							const newGameTimer = this.gameTimerF();
+							this.turnTimerF(newGameTimer);
+						}, 3000);
+					}
 				}else{
 					this.gameMessageTag.innerText = "All cards are removed from the table!";
 					this.end();
-				}
-				this.turnTime = this.originTurnTime; // for more fluent time display and 10 seconds turn value show
-				this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
-				if(this.gameTime > 1 && !this.isError){
-					setTimeout(() => {
-						let isSkipped = true;
-						while(isSkipped){
-							try{
-								isSkipped = this.playerTurn();
-							}catch(error){
-								this.isError = true;
-								console.log(error);
-								break; // IMPORTANT - if error during while cycle, it would kill browser without break
-							}
-						}
-						const newGameTimer = this.gameTimerF();
-						this.turnTimerF(newGameTimer);
-					}, 3000);
 				}
 			}
 		}, 1000);
@@ -616,7 +620,8 @@ export class Game {
 		// turn managment
 		this.turns++;
 		Card.addGameTurn(this.turns);
-		Card.revealClick = false;
+		Card.revealObject.click = false;
+		Card.revealObject.stop = false;
 		// save the player on turn
 		const player = this.players.shift();
 		// reset all players onTurn property to false
@@ -641,14 +646,18 @@ export class Game {
 	}
 
 	end() {
-		this.gameMessageTag.innerText = `GAME ENDED - Winner is ${this.findWinner()}`;
+		this.gameMessageTag.innerText = this.findWinner();
 	}
 
 	findWinner() {
 		const sorted = this.players.sort(
 			(a, b) => (a.skip - b.skip) || (b.points - a.points)
 		);
-		return sorted[0].name;
+		if(sorted[0].skip === sorted[1].skip && sorted[0].points === sorted[1].points){
+			return "GAME ENDED - It's a DRAW!";
+		}else{
+			return `GAME ENDED - Winner is ${sorted[0].name}!`;
+		}
 	}
 							
 	holdFunc(){
@@ -661,6 +670,9 @@ export class Game {
 					toHoldCard.holdFlag = true;
 					this.gameMessageTag.innerText = `${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`;
 				}
+				if(Card.generalRevealFlag === true){
+					Card.autoHideCards();
+				}
 			}else if(Player.playerOnTurn.counter === 2 || (Player.playerOnTurn.counter === 1 && Player.playerOnTurn.stopTurn === true)){
 				Card.autoHideCards(Player.playerOnTurn.id);
 			}
@@ -671,24 +683,24 @@ export class Game {
 
 	tiltLaunch() {
 		//It also supports NodeList
-		VanillaTilt.init(document.querySelectorAll(".js-card"),
+		VanillaTilt.init(document.querySelectorAll(".js-table"),
 		{
 			/* library don't support rewriting data atributes by js init method, js would be ignored */
 			/* All options with defaults */
 			reverse:                false,  // reverse the tilt direction
-			max:                    35,     // max tilt rotation (degrees)
+			max:                    2,     // max tilt rotation (degrees)
 			startX:                 0,      // the starting tilt on the X axis, in degrees.
 			startY:                 0,      // the starting tilt on the Y axis, in degrees.
 			perspective:            1000,   // Transform perspective, the lower the more extreme the tilt gets.
 			scale:                  1,      // 2 = 200%, 1.5 = 150%, etc..
-			speed:                  300,    // Speed of the enter/exit transition
+			speed:                  10,    // Speed of the enter/exit transition
 			transition:             true,   // Set a transition on enter/exit.
 			axis:                   null,   // What axis should be enabled. Can be "x" or "y"
-			reset:                  true,   // If the tilt effect has to be reset on exit.
+			reset:                  false,   // If the tilt effect has to be reset on exit.
 			"reset-to-start":       false,   // Whether the exit reset will go to [0,0] (default) or [startX, startY]
 			easing:                 "cubic-bezier(.03,.98,.52,.99)",    // Easing on enter/exit.
-			glare:                  false,  // if it should have a "glare" effect
-			"max-glare":            1,      // the maximum "glare" opacity (1 = 100%, 0.5 = 50%)
+			glare:                  true,  // if it should have a "glare" effect
+			"max-glare":            0.25,      // the maximum "glare" opacity (1 = 100%, 0.5 = 50%)
 			"glare-prerender":      false,  // false = VanillaTilt creates the glare elements for you, otherwise
 														// you need to add .js-tilt-glare>.js-tilt-glare-inner by yourself
 			"mouse-event-element":  null,   // css-selector or link to HTML-element what will be listen mouse events
