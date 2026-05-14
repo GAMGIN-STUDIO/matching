@@ -13,13 +13,21 @@
   }
 }
 
-/* indie-flower-regular - latin_latin-ext */
+/* m-plus-1-code-300 - latin_latin-ext */
 @font-face {
   font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: 'Indie Flower';
+  font-family: 'M PLUS 1 Code';
   font-style: normal;
-  font-weight: 400;
-  src: url('../fonts/indie-flower-v24-latin_latin-ext-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  font-weight: 300;
+  src: url('../fonts/m-plus-1-code-v17-latin_latin-ext-300.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* m-plus-1-code-700 - latin_latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'M PLUS 1 Code';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/m-plus-1-code-v17-latin_latin-ext-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 
@@ -38,8 +46,8 @@
 		background: url('./svg/background-wallpaper.svg') center center / cover no-repeat;
 /* 		background-color: #0f172a; */
 		margin: 0px; /* cause of right computing size of the table and cards */
-		font-family: 'Indie Flower';
-
+		font-family: 'M PLUS 1 Code';
+		font-weight: 300;
 
 		& header {
 			display: flex;
@@ -69,7 +77,7 @@
 				}
 
 				& div.reveal {
-					padding: 4px 7px;
+					padding: 7px 7px;
 					border: 2px solid purple;
 					border-radius: 1px;
 					background-color: rgba(0, 0, 0, 0.4);
@@ -77,7 +85,7 @@
 				}
 
 				& div.reskip {
-					padding: 2px 4px;
+					padding: 4px 4px;
 					border: 2px solid plum;
 					border-radius: 50%;
 					background-color: white;
@@ -109,13 +117,15 @@
 
 		& summary {
 			height: 35px;
+			line-height: 35px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 /* 			background-color: sienna; */
-			font-weight: bold;
 			font-size: 12px;
-			padding-top: 10px;
+			font-weight: 700;
+			padding: 10px 10px;
+			padding-bottom: 0px;
 			color: white;
 		}
 
@@ -129,14 +139,15 @@
 				flex-direction: column;
 				justify-content: center;
 				align-items: center;
-				font-weight: bold;
+				font-weight: 700;
 			}
 
 			& .js-player {
 				color: rgb(255, 0, 255);
 
 				& #name {
-					font-weight: bold;	
+					font-weight: 700;
+					text-decoration: underline;
 				}
 
 				& > div {
@@ -144,26 +155,26 @@
 					grid-template-columns: repeat(2, 1fr);
 					margin-top: 5px;
 					gap: 0px 10px;
-					font-weight: bold;
+					font-weight: 700;
 
 					& #points::before {
 						content: 'Points: ';
-						font-weight: normal;
+						font-weight: 300;
 					}
 
 					& #skip::before {
 						content: 'Skips: ';
-						font-weight: normal;
+						font-weight: 300;
 					}
 
 					& #actual-skip::before {
 						content: 'Actual skip: ';
-						font-weight: normal;
+						font-weight: 300;
 					}
 
 					& #counter::before {
 						content: 'Cards counter: ';
-						font-weight: normal;
+						font-weight: 300;
 					}
 				}
 			}
@@ -173,12 +184,12 @@
 				
 				& #game-time::before {
 					content: 'Game time: ';
-					font-weight: normal;
+					font-weight: 300;
 				}
 
 				& #turn-time::before {
 					content: 'Turn time: ';
-					font-weight: normal;
+					font-weight: 300;
 				}
 			}
 
@@ -187,12 +198,12 @@
 
 				& .player-II::before {
 					content: 'Player II: ';
-					font-weight: normal;
+					font-weight: 300;
 				}
 
 				& .player-III::before {
 					content: 'Player III: ';
-					font-weight: normal;
+					font-weight: 300;
 				}
 			}
 		}

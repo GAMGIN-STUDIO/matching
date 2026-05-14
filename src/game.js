@@ -600,7 +600,7 @@ export class Game {
 		if(this.turnTime > 0){
 			this.turnTimeFormatted = `${this.timeFormat(this.turnTime)}`;
 		}else{
-			this.turnTimeFormatted = `${this.timeFormat(this.turnTime)} - ENDED`;
+			this.turnTimeFormatted = `${this.timeFormat(this.turnTime)}`;
 		}
 		this.timeTagsObject.turnTimeTag.innerText = `${this.turnTimeFormatted}`;
 	}
