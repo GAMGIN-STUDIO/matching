@@ -15,7 +15,7 @@ export class Card {
 
 	constructor(theme, odd, admin = false, gameMessageTag) {
 		this.back = odd ? "black" : "grey"; // condition for black&white color pattern decision
-		this.border = false;
+		this.border = true;
 
 		this.face = false;
 		this.theme = theme;
@@ -37,7 +37,8 @@ export class Card {
 		cardTag.style.width = Card.cardSize;
 		cardTag.style.height = Card.cardSize;
 		cardTag.style.backgroundColor = this.back;
-		cardTag.style.border = this.border ? '2px solid red' : 'none';
+		cardTag.style.border = this.border ? `2px solid` : 'none';
+		cardTag.style.boxSizing = this.border ? 'border-box' : 'content-box';
 		cardTag.style.cursor = 'pointer';
 		cardTag.dataset.themeColor = this.theme.color;
 		cardTag.dataset.themeIcon = this.theme.icon;
@@ -175,7 +176,7 @@ export class Card {
 				this.generalRevealFlag = true;
 			}
 		}else if(this.revealObject.click === false && Player.playerOnTurn.points === 0){
-			Card.gameMessageTag.innerText = "You cannout turn ON the reveal mode - you don't have enough points!!";
+			Card.gameMessageTag.innerText = "You cannot turn ON the reveal mode - you don't have enough points!!";
 		}else{
 			this.revealObject.click = false;
 			Card.gameMessageTag.innerText = 'You turn OFF the reveal mode!';

@@ -13,10 +13,19 @@
   }
 }
 
+/* indie-flower-regular - latin_latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Indie Flower';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/indie-flower-v24-latin_latin-ext-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
 
 /* layers */
 
-@layer base, base.desktop, base.mobile, components;
+@layer base, base.desktop-sizing, base.mobile-sizing, components;
 
 
 /* selectors */
@@ -26,29 +35,59 @@
 	body {
 		display: flex;
 		flex-direction: column;
-		background-color: grey;
+		background: url('./svg/background-wallpaper.svg') center center / cover no-repeat;
+/* 		background-color: #0f172a; */
 		margin: 0px; /* cause of right computing size of the table and cards */
+		font-family: 'Indie Flower';
+
 
 		& header {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			background-color: rgba(41, 150, 88, 0.467);
 
 			& h1 {
 				font-size: larger;
 				margin: 0px;
+				color: white;
 				
 			}
 		}
 
 		& main {
 			display: flex;
-			background-color: darkkhaki;
+/* 			background-color: darkkhaki; */
+
+			& section.control-panel {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+/* 				background-color: rgb(237, 179, 120); */
+
+				& div {
+					display: flex;
+				}
+
+				& div.reveal {
+					padding: 4px 7px;
+					border: 2px solid purple;
+					border-radius: 1px;
+					background-color: rgba(0, 0, 0, 0.4);
+					color: plum;
+				}
+
+				& div.reskip {
+					padding: 2px 4px;
+					border: 2px solid plum;
+					border-radius: 50%;
+					background-color: white;
+					color: purple;
+				}
+			}
 
 			& section.js-table {
 				display: grid;
-				background-color: bisque;
+				border-radius: 4px;
 
 				& .js-card {
 					display: flex;
@@ -56,6 +95,8 @@
 					align-items: center;
 					flex-shrink: 0;
 					border-radius: 4px;
+					border-color: black !important;
+					font-family: initial;
 					
 					transition: transform .25s, opacity 2.5s;
 				}
@@ -64,42 +105,24 @@
 					transform: scaleX(0);
 				}
 			}
-
-			& section.control-panel {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				background-color: rgb(237, 179, 120);
-
-				& button {
-					display: flex;
-				}
-
-				button.reveal {
-					color: plum;
-				}
-
-				button.reskip {
-					color: plum;
-				}
-			}
 		}
 
 		& summary {
-			height: 45px;
+			height: 35px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			background-color: sienna;
+/* 			background-color: sienna; */
 			font-weight: bold;
-			font-size: 11px;
-			padding: 5px 10px;
+			font-size: 12px;
+			padding-top: 10px;
+			color: white;
 		}
 
 		& footer.score {
 
 			display: flex;
-			background-color: rosybrown;
+/* 			background-color: rosybrown; */
 
 			& > div {
 				display: flex;
@@ -110,6 +133,7 @@
 			}
 
 			& .js-player {
+				color: rgb(255, 0, 255);
 
 				& #name {
 					font-weight: bold;	
@@ -145,6 +169,7 @@
 			}
 
 			& .time {
+				color: pink;
 				
 				& #game-time::before {
 					content: 'Game time: ';
@@ -158,6 +183,7 @@
 			}
 
 			& .players-queue {
+				color: violet;
 
 				& .player-II::before {
 					content: 'Player II: ';
@@ -173,7 +199,39 @@
 	}
 }
 
-@layer base.desktop {
+@media (hover: hover) and (pointer: fine) {
+	@layer base {
+		body {
+			& main {
+				& section.js-table:hover {
+					background: none;
+				}
+
+				& section.js-table:hover {
+					background: rgba(255, 255, 255, 0.1);
+				}
+			}
+		}
+	}
+}
+
+@media (hover: none), (pointer: coarse) {
+	@layer base {
+		body {
+			& main {
+				& section.js-table {
+					background: rgba(255, 255, 255, 0.1);
+				}
+
+				& section.js-table:hover {
+					background: rgba(255, 255, 255, 0.1);
+				}
+			}
+		}
+	}
+}
+
+@layer base.desktop-sizing {
 	
 	body.desktop {
 
@@ -200,7 +258,7 @@
 	}
 }
 
-@layer base.mobile {
+@layer base.mobile-sizing {
 	
 	body.mobile {
 
