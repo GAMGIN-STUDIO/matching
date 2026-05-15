@@ -49,7 +49,7 @@ export class Card {
 		iconTag.classList.add(`fa-solid`);
 		iconTag.classList.add(this.theme.icon);
 		this.tag.style.fontSize = `calc(${Card.cardSize} / 2)`; // icon size management
-		this.tag.style.color = this.adminFlag ? 'white' : this.back; // hide initial icon 
+		this.tag.style.color = this.back; // hide initial icon -- in admin mode use rather this.adminFlag ? 'white' : this.back; than this.back
 		this.tag.appendChild(iconTag);
 	}
 

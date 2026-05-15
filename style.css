@@ -21,6 +21,7 @@
   font-weight: 300;
   src: url('../fonts/m-plus-1-code-v17-latin_latin-ext-300.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
 /* m-plus-1-code-700 - latin_latin-ext */
 @font-face {
   font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
@@ -28,6 +29,15 @@
   font-style: normal;
   font-weight: 700;
   src: url('../fonts/m-plus-1-code-v17-latin_latin-ext-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* indie-flower-regular - latin_latin-ext */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Indie Flower';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/indie-flower-v24-latin_latin-ext-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 
@@ -44,10 +54,9 @@
 		display: flex;
 		flex-direction: column;
 		background: url('./svg/background-wallpaper.svg') center center / cover no-repeat;
-/* 		background-color: #0f172a; */
 		margin: 0px; /* cause of right computing size of the table and cards */
-		font-family: 'M PLUS 1 Code';
-		font-weight: 300;
+		font-family: 'Indie Flower';
+		font-weight: 400;
 
 		& header {
 			display: flex;
@@ -64,38 +73,39 @@
 
 		& main {
 			display: flex;
-/* 			background-color: darkkhaki; */
 
 			& section.control-panel {
 				display: flex;
 				justify-content: center;
 				align-items: center;
-/* 				background-color: rgb(237, 179, 120); */
 
 				& div {
 					display: flex;
 				}
 
 				& div.reveal {
-					padding: 7px 7px;
+					padding: 4px 7px;
 					border: 2px solid purple;
 					border-radius: 1px;
 					background-color: rgba(0, 0, 0, 0.4);
 					color: plum;
+					transition: transform 0.2s linear, opacity 0.2s linear;
 				}
 
 				& div.reskip {
-					padding: 4px 4px;
+					padding: 2px 4px;
 					border: 2px solid plum;
 					border-radius: 50%;
 					background-color: white;
 					color: purple;
+					transition: transform 0.2s linear, opacity 0.2s linear;
 				}
 			}
 
 			& section.js-table {
 				display: grid;
 				border-radius: 4px;
+				transition: background-color 0.6s ease-out;
 
 				& .js-card {
 					display: flex;
@@ -105,6 +115,7 @@
 					border-radius: 4px;
 					border-color: black !important;
 					font-family: initial;
+					font-weight: initial;
 					
 					transition: transform .25s, opacity 2.5s;
 				}
@@ -113,6 +124,23 @@
 					transform: scaleX(0);
 				}
 			}
+
+			& section.js-table.hover-white{
+				background-color: rgba(255, 255, 255, 0.1);
+			}
+
+			& section.js-table.hover-purple{
+				background-color: rgba(128, 0, 128, 0.1);
+			}
+
+			& section.js-table.hover-forest{
+				background-color: rgba(134, 239, 173, 0.1);
+			}
+
+			& section.js-table.hover-cloud{
+				background-color: rgba(20, 40, 100, 0.3);
+			}
+
 		}
 
 		& summary {
@@ -121,9 +149,7 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-/* 			background-color: sienna; */
 			font-size: 12px;
-			font-weight: 700;
 			padding: 10px 10px;
 			padding-bottom: 0px;
 			color: white;
@@ -132,13 +158,13 @@
 		& footer.score {
 
 			display: flex;
-/* 			background-color: rosybrown; */
 
 			& > div {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
 				align-items: center;
+				font-family: 'M PLUS 1 Code'; /* for number values, cause of dynamic writing, indi flower isn't monospace */
 				font-weight: 700;
 			}
 
@@ -146,7 +172,8 @@
 				color: rgb(255, 0, 255);
 
 				& #name {
-					font-weight: 700;
+					font-family: 'Indie Flower';
+					font-weight: 400;
 					text-decoration: underline;
 				}
 
@@ -155,55 +182,58 @@
 					grid-template-columns: repeat(2, 1fr);
 					margin-top: 5px;
 					gap: 0px 10px;
-					font-weight: 700;
+
+					& span::before {
+						font-family: 'Indie Flower';
+						font-weight: 400;
+					}
 
 					& #points::before {
 						content: 'Points: ';
-						font-weight: 300;
 					}
 
 					& #skip::before {
 						content: 'Skips: ';
-						font-weight: 300;
 					}
 
 					& #actual-skip::before {
 						content: 'Actual skip: ';
-						font-weight: 300;
 					}
 
 					& #counter::before {
 						content: 'Cards counter: ';
-						font-weight: 300;
 					}
 				}
 			}
 
 			& .time {
 				color: pink;
+
+				& span::before {
+					font-family: 'Indie Flower';
+					font-weight: 400;
+				}
 				
 				& #game-time::before {
 					content: 'Game time: ';
-					font-weight: 300;
 				}
 
 				& #turn-time::before {
 					content: 'Turn time: ';
-					font-weight: 300;
 				}
 			}
 
 			& .players-queue {
 				color: violet;
+				font-family: 'Indie Flower';
+				font-weight: 400;
 
 				& .player-II::before {
 					content: 'Player II: ';
-					font-weight: 300;
 				}
 
 				& .player-III::before {
 					content: 'Player III: ';
-					font-weight: 300;
 				}
 			}
 		}
@@ -214,33 +244,32 @@
 	@layer base {
 		body {
 			& main {
-				& section.js-table:hover {
-					background: none;
-				}
 
-				& section.js-table:hover {
-					background: rgba(255, 255, 255, 0.1);
+				& section.control-panel {
+
+					& div.reveal:hover {
+						transform: scale(0.9);
+						opacity: 0.5;
+					}
+
+					& div.reskip:hover {
+						transform: scale(1.2);
+						opacity: 0.5;
+					}
 				}
 			}
 		}
 	}
 }
 
-@media (hover: none), (pointer: coarse) {
+/* @media (hover: none), (pointer: coarse) {
 	@layer base {
 		body {
 			& main {
-				& section.js-table {
-					background: rgba(255, 255, 255, 0.1);
-				}
-
-				& section.js-table:hover {
-					background: rgba(255, 255, 255, 0.1);
-				}
 			}
 		}
 	}
-}
+} */
 
 @layer base.desktop-sizing {
 	
@@ -329,5 +358,21 @@
 			) border-box;
 
 		animation: spin 5s linear infinite;
+
+
+		key part always is:
+			position: relative;
+			border: 1px solid transparent;
+			background:
+				linear-gradient(rgb(255, 255, 255)) padding-box,
+				conic-gradient(
+					from var(--angle),
+					transparent 0deg,
+					transparent 120deg,
+					purple 240deg,
+					transparent 360deg
+				) border-box;
+
+			animation: spin 5s linear infinite;
 	} */
 

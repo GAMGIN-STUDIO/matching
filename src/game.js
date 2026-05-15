@@ -35,6 +35,14 @@ export class Game {
 		// game init managament
 		this.themes = dataThemes.themes; 
 
+		// table hover class themes
+		this.tableHoverClassThemes = {
+			hoverWhite: 'hover-white',
+			hoverPurple: 'hover-purple',
+			hoverForest: 'hover-forest',
+			hoverCloud: 'hover-cloud'
+		}
+
 		// core game managment
 		this.players = [];
 		this.cards = [];
@@ -53,7 +61,7 @@ export class Game {
 		this.turnTime = this.originTurnTime; 
 		this.gameTimeFormatted = "";
 		this.turnTimeFormatted = "";    
-		this.turns = this.admin ? 10 : 0;
+		this.turns = 0; // if you use next code: (this.admin ? 10 : 0) ..... at turns condition on the bottom (holdFunc) you should use same code (this.admin ? 10 : 0)
 
 		// game massage tag
 		this.gameMessageTag = document.getElementById('game-message');
@@ -283,6 +291,15 @@ export class Game {
 	createTableTag() {
 		const tableTag = document.createElement('section');
 		tableTag.classList.add('js-table');
+		tableTag.addEventListener('pointerenter', (e) => {
+			const arrayKeys = Object.keys(this.tableHoverClassThemes);
+			const randomNum = this.randomNum(arrayKeys.length);
+			const randHoverClass = this.tableHoverClassThemes[arrayKeys[randomNum]];
+			arrayKeys.forEach((key) => {
+				e.target.classList.remove(this.tableHoverClassThemes[key]);
+			});
+			e.target.classList.add(randHoverClass);
+		})
 		this.tableTag = tableTag;
 	}
 
@@ -667,9 +684,13 @@ export class Game {
 			return `GAME ENDED - Winner is ${sorted[0].name}!`;
 		}
 	}
+
+	randomNum(rangeNum) {
+		return Math.floor(Math.random() * rangeNum);
+	}
 							
 	holdFunc(){
-		if(this.turns > (this.admin ? 10 : 0)){
+		if(this.turns > 0){ // if you use next code: (this.admin ? 10 : 0) ..... at turns setting on the top you should use same code (this.admin ? 10 : 0)
 			if((Player.playerOnTurn.counter === 1 || Player.playerOnTurn.counter === 0) && Player.playerOnTurn.stopTurn === false){
 				const toHoldCard = this.cards.find((card) => {
 					return card.face === true && card.playerID === Player.playerOnTurn.id;
