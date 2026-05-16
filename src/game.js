@@ -5,18 +5,18 @@ export class Game {
 
 	constructor(dataThemes, admin = false) {
 
-		// media queries managment
+		// media query management
 		this.isTouchOnly =
 			window.matchMedia("(pointer: coarse)").matches &&
 			!window.matchMedia("(hover: hover)").matches;
 
-		// admin and other managment
+		// admin and general configuration
 		this.admin = admin;
 		let gameTime = null;
 		let originTurnTime = null;
 		if(!this.admin){
-			gameTime = Number(prompt('Enter game time in minutes (1-60):'));
-			originTurnTime = Number(prompt('Enter turn time in seconds (5-10):'));
+			gameTime = Number(prompt('Enter game duration in minutes (1–60):'));
+			originTurnTime = Number(prompt('Enter turn duration in seconds (5–10):'));
 			if(					
 					(gameTime === null || originTurnTime === null)||
 					(Number.isNaN(gameTime) || Number.isNaN(originTurnTime)) ||
@@ -32,7 +32,7 @@ export class Game {
 			originTurnTime = 10; // admin turn time in seconds
 		}
 
-		// game init managament
+		// game initialization management
 		this.themes = dataThemes.themes; 
 
 		// table hover class themes
@@ -43,19 +43,19 @@ export class Game {
 			hoverCloud: 'hover-cloud'
 		}
 
-		// core game managment
+		// core game management
 		this.players = [];
 		this.cards = [];
 		this.gridIndex = null; // cols and rows of the table, it will be square
 
-		// mount managment
+		// mounting management
 		this.mountObject = {
 			mountPoint: false,
 			tableTag: false,
 			controlPanelTag: false
 		};
 
-		// game time managment
+		// game time management
 		this.gameTime = (gameTime * 60) + 1; // 20 minutes in seconds + 1 second for more fluent time display
 		this.originTurnTime = originTurnTime + 1; // + 1 second for more fluent time display and 10 seonds turn value show
 		this.turnTime = this.originTurnTime; 
@@ -72,15 +72,20 @@ export class Game {
 			turnTimeTag: this.getTimeTag('turn'),
 		}
  
-		// responsive managment
+		// main and body tags
+		this.mainTag = document.querySelector('main');
+		this.bodyTag = document.querySelector('body');
+
+		// responsive management
 		this.sizeObject = {
+			mainPadding: 15, // pixels
 			cardsGap: null, // pixels
 			tablePadding: 12, // pixels
 			width: window.innerWidth,
 			height: window.innerHeight
 		};
 
-		// size comfort managment
+		// size comfort management
 		this.sizeComfort = {
 			border: 400,
 			good: 600, 
@@ -108,12 +113,12 @@ export class Game {
 		}
 		this.ctrlPanelHeight.style = `${this.ctrlPanelHeight.value}px`;
 
-		// error managment
+		// error management
 		this.isError = false;
  
 	}
 
-	// game init managment
+	// game init management
 
 	static async init(admin) {
 		const res = await fetch("./src/cards/themes.json");
@@ -121,7 +126,7 @@ export class Game {
 		return new Game(json, admin);
 	}
 
-	// GAME MANAGMENT
+	// GAME management
 
 	// init part and help functions
 
@@ -135,10 +140,10 @@ export class Game {
 					numPlayers > 3 ||
 					!Number.isInteger(numPlayers)
 			) {
-				numPlayers = this.admin ? 2 : Number(prompt("Enter the number of players (2-3):"));
+				numPlayers = this.admin ? 2 : Number(prompt('Enter number of players (2–3):'));
 			}
 			for (let i = 0; i < numPlayers; i++) {
-				const playerName = this.admin ? `Player ${i+1}` : prompt(`Enter the name of player ${i+1}:`)
+				const playerName = this.admin ? `Player ${i+1}` : prompt(`Enter name for Player ${i + 1}:`)
 				const player = new Player(playerName, i+1);
 				this.players.push(player);
 			}
@@ -224,13 +229,13 @@ export class Game {
 
 	askForSize(lowerSize){
 		if(lowerSize >= this.sizeComfort.comfort){
-			this.gridIndex = this.admin ? "10" : prompt("Amount of cards - 4 (4x4), 6 (6x6), 8 (8x8), 10 (10x10) :");
+			this.gridIndex = this.admin ? "10" : prompt('Select grid size: 4 (4×4), 6 (6×6), 8 (8×8), 10 (10×10):');
 		}else if(lowerSize >= this.sizeComfort.good){
-			this.gridIndex = this.admin ? "8" : prompt("Amount of cards - 4 (4x4), 6 (6x6), 8 (8x8) :");
+			this.gridIndex = this.admin ? "8" : prompt("Select grid size: 4 (4x4), 6 (6x6), 8 (8x8) :");
 		}else if(lowerSize >= this.sizeComfort.border){
-			this.gridIndex = this.admin ? "6" : prompt("Amount of cards - 4 (4x4), 6 (6x6) :");
+			this.gridIndex = this.admin ? "6" : prompt("Select grid size: 4 (4x4), 6 (6x6) :");
 		}else{
-			this.gridIndex = this.admin ? "4" : prompt("Amount of cards - you can choose only 4 (4x4), write 4 :");
+			this.gridIndex = this.admin ? "4" : prompt("Select grid size: you can choose only 4 (4x4), write 4 :");
 		}
 	}
 
@@ -256,7 +261,7 @@ export class Game {
 			}
 			return unique;
 		}else{
-			throw new Error(`CARDS NOT INITIALIZED - Invalid theme ID: ${validation.invalidID === "" ? "Empty string ID" : validation.invalidID}`);
+			throw new Error(`Cards not initialized - invalid theme ID: ${validation.invalidID === "" ? "Empty string ID" : validation.invalidID}`);
 		}
 	}
 
@@ -314,47 +319,53 @@ export class Game {
 			};
 		} */
 
-		// table size managment
-		let saveSize = Math.min(this.sizeObject.width, this.sizeObject.height) - (2 * this.sizeObject.tablePadding); // savesize for cards, has to be lower about 2 paddings of the table
-		const scoreTag = document.querySelector('footer.score');
-		scoreTag.style.justifyContent = 'space-between';
-		scoreTag.style.padding = `${this.scoreTagStyles.paddingY}px ${this.scoreTagStyles.paddingX}px`;
-		if(saveSize >= this.sizeComfort.comfort) {
-			saveSize = saveSize - 150; // 150 = just for game buttons (flex direction row)
-			document.querySelector('main').style.flexDirection = 'row';
-			document.querySelector('main').style.justifyContent = 'center';
-			document.querySelector('body').classList.add('desktop'); // main is row but control panel is column
-		}else{
-			saveSize = saveSize - (this.ctrlPanelHeight.value + this.headerHeight.value); // 100 = for game buttons 40px + cca 60px header with score (flex direciton column)
-			this.controlPanelTag.style.height = this.ctrlPanelHeight.style;
-			document.querySelector('main').style.flexDirection = 'column';
-			document.querySelector('main').style.alignItems = 'center';
-			document.querySelector('body').classList.add('mobile'); // main is column but control panel is row
-			if(this.sizeObject.width < (500 + (2 * this.scoreTagStyles.paddingX))){ // 500 = cca 380 (player + queue) + cca 120 (time) + some tolerance
-				scoreTag.style.flexDirection = 'column';
-				scoreTag.style.alignItems = 'center';
-				scoreTag.style.justifyContent = 'flex-start';
-				scoreTag.style.gap = `${this.scoreTagStyles.gap}px 0px`; // // dynamic gap for rows, but no gap between columns - we are in column direction
+		if(this.mainTag instanceof HTMLElement || this.bodyTag instanceof HTMLElement){
+			// table size management
+			this.mainTag.style.padding = `0px ${this.sizeObject.mainPadding}px`;
+			// savesize is little bit complicated and for cards, has to be lower about 2 paddings of the table
+			let saveSize = Math.min(this.sizeObject.width, this.sizeObject.height) - (2 * this.sizeObject.tablePadding) - (2 * this.sizeObject.mainPadding);
+			const scoreTag = document.querySelector('footer.score');
+			scoreTag.style.justifyContent = 'space-between';
+			scoreTag.style.padding = `${this.scoreTagStyles.paddingY}px ${this.scoreTagStyles.paddingX}px`;
+			if(saveSize >= this.sizeComfort.comfort) {
+				saveSize = saveSize - 150; // 150 = just for game buttons (flex direction row)
+				this.mainTag.style.flexDirection = 'row';
+				this.mainTag.style.justifyContent = 'center';
+				this.bodyTag.classList.add('desktop'); // main is row but control panel is column
+			}else{
+				saveSize = saveSize - (this.ctrlPanelHeight.value + this.headerHeight.value); // 100 = for game buttons 40px + cca 60px header with score (flex direciton column)
+				this.controlPanelTag.style.height = this.ctrlPanelHeight.style;
+				this.mainTag.style.flexDirection = 'column';
+				this.mainTag.style.alignItems = 'center';
+				this.bodyTag.classList.add('mobile'); // main is column but control panel is row
+				if(this.sizeObject.width < (500 + (2 * this.scoreTagStyles.paddingX))){ // 500 = cca 380 (player + queue) + cca 120 (time) + some tolerance
+					scoreTag.style.flexDirection = 'column';
+					scoreTag.style.alignItems = 'center';
+					scoreTag.style.justifyContent = 'flex-start';
+					scoreTag.style.gap = `${this.scoreTagStyles.gap}px 0px`; // // dynamic gap for rows, but no gap between columns - we are in column direction
 
+				}
 			}
-		}
-		this.tableTag.style.width = `${saveSize}px`;
-		this.tableTag.style.height = `${saveSize}px`;
-		this.tableTag.style.gap = `${this.sizeObject.cardsGap}px`;
-		this.tableTag.style.padding = `${this.sizeObject.tablePadding}px`;
-		this.tableTag.style.gridTemplateColumns = `repeat(${this.gridIndex}, 1fr)`;
+			this.tableTag.style.width = `${saveSize}px`;
+			this.tableTag.style.height = `${saveSize}px`;
+			this.tableTag.style.gap = `${this.sizeObject.cardsGap}px`;
+			this.tableTag.style.padding = `${this.sizeObject.tablePadding}px`;
+			this.tableTag.style.gridTemplateColumns = `repeat(${this.gridIndex}, 1fr)`;
 
-		// card size managment
-		const rawCardSize = Math.round(saveSize / this.gridIndex);
-		const cardSize  = rawCardSize - (this.sizeObject.cardsGap);
-		resize ? Card.useCardSize(`${cardSize}px`, true) : Card.useCardSize(`${cardSize}px`);
+			// card size management
+			const rawCardSize = Math.round(saveSize / this.gridIndex);
+			const cardSize  = rawCardSize - (this.sizeObject.cardsGap);
+			resize ? Card.useCardSize(`${cardSize}px`, true) : Card.useCardSize(`${cardSize}px`);
+		}else{
+			throw new Error('Main or body element is not a valid HTML element');
+		}
 	}
 
 	cardsService() {
 		if(!this.isError) {
-			this.createTableTag();
-			this.makeGameSizes();
 			try{
+				this.createTableTag();
+				this.makeGameSizes();
 				if(this.tableTag instanceof HTMLElement) {
 					for(const card of this.cards) {
 						card.createCardTag();
@@ -362,7 +373,7 @@ export class Game {
 						this.tableTag.appendChild(card.tag);
 					}
 				}else{
-					throw new Error('TABLE TAG NOT CORRECT - Cannot launch appending cards');
+					throw new Error('Table element is invalid - cannot append cards');
 				}
 			}catch(error){
 				this.isError = true;
@@ -398,39 +409,41 @@ export class Game {
 	initReskipListener() {
 		if(this.reskipTag instanceof HTMLElement) {
 			this.reskipTag.addEventListener('click', () => {
-				// reskip managment
+				// reskip management
 				const player = Player.playerOnTurn;
 				if(player.skip > 0 && player.points >= 3) {
 					player.skip--;
 					Player.skipMethod();
+					player.actualSkip = false;
+					Player.actualSkipMethod();
 					player.points -= 3;
 					Player.pointsMethod();
-					this.gameMessageTag.innerText = 'You used reskip button! You lose 3 points but also 1 skip for reward!';
+					this.gameMessageTag.innerText = 'You used the reskip button! You lose 3 points but gain 1 skip as a reward!';
 				}else if(player.skip == 0){
-					this.gameMessageTag.innerText = "You have no skips, so you can't substract none of it!";
+					this.gameMessageTag.innerText = "You have no skips, so you can't subtract any of them!";
 				}else if(player.points < 3){
-					this.gameMessageTag.innerText = "You don't have enough points for reskip operation!";
+					this.gameMessageTag.innerText = "You don't have enough points to perform a reskip!";
 				}
 			})
 		}else{
-			throw new Error('RESKIP TAG NOT INITIALIZED - Cannot init reskip listener');
+			throw new Error('Reskip button not initialized - cannot attach event listener');
 		}
 	}
 
 	initRevealListener() {
 		if(this.revealTag instanceof HTMLElement) {
 			this.revealTag.addEventListener('click', () => {
-				// reveal managment
+				// reveal management
 				Card.revealMethod();
 			})
 		}else{
-			throw new Error('REVEAL TAG NOT INITIALIZED - Cannot init reveal listener');
+			throw new Error('Reveal button not initialized - cannot attach event listener');
 		}
 	}
 
 	gameButtonsService() {
 		if(!this.isError) {
-			// reskip & reveal buttons managment
+			// reskip & reveal buttons management
 			this.createReskipTag();
 			this.createRevealTag();
 			this.createControlPanelTag();
@@ -458,7 +471,7 @@ export class Game {
 			if(playerOfQueueTag instanceof HTMLElement){
 				playersQueueTags.push(playerOfQueueTag);
 			}else{
-				throw new Error(`PLAYER OF QUEUE TAG NOT CORRECT - ${i+1}. player of queue tag is not correctly created `);
+				throw new Error(`Invalid player queue element at index ${i + 1}`);
 			}
 		}
 		this.playersQueueTags = playersQueueTags;
@@ -474,11 +487,11 @@ export class Game {
 						if(playerOfQueueTag instanceof HTMLElement) {
 							this.playersQueueParentTag.appendChild(playerOfQueueTag);
 						}else{
-							throw new Error('PLAYER OF QUEUE TAG NOT CORRECT - Cannot launch players queue service');
+							throw new Error('Player queue element is invalid - cannot initialize queue service');
 						}
 					}
 				}else{
-					throw new Error('PARENT QUEUE TAG NOT CORRECT - Cannot launch players queue service');
+					throw new Error('Parent queue element is invalid - cannot initialize queue service');
 				}
 			}catch(error){
 				this.isError = true;
@@ -487,15 +500,15 @@ export class Game {
 		}
 	}
 
-	// game mount managment - mounting game components (table with cards and game buttons) to the DOM
+	// game mount management - mounting game components (table with cards and game buttons) to the DOM
 
 	findMountPoint() {
-		const mountPoint = document.querySelector('main');
+		const mountPoint = this.mainTag;
 		if(mountPoint instanceof HTMLElement) {
 			this.mountPoint = mountPoint;
 			this.mountObject['mountPoint'] = true; // mountPoint is under double control (mountObject plus error branch)
 		}else{
-			throw new Error('MOUNT POINT NOT FOUND - Cannot find mount point in the DOM');
+			throw new Error('Mount point not found in the DOM - cannot initialize game');
 		}
 	}
 
@@ -532,12 +545,12 @@ export class Game {
 	allMounted() {
 		for(const key in this.mountObject) {
 			if(this.mountObject[key] === false) {
-				throw new Error(`GAME NOT STARTED - Key component ${key} is not mounted`);
+				throw new Error(`Game not started - required component "${key}" is not mounted`);
 			}
 		}
 	}
 
-	// game start/end managment
+	// game start/end management
 
 	start() {
 		try{
@@ -551,7 +564,7 @@ export class Game {
 				this.playerTurn();
 				const gameTimer = this.gameTimerF();
 				this.turnTimerF(gameTimer);
-				this.gameMessageTag.innerText = 'Game started! Good luck!';
+				this.gameMessageTag.innerText = 'Game started. Good luck!';
 			}catch(error){
 				this.isError = true;
 				console.log(error);
@@ -579,7 +592,7 @@ export class Game {
 				clearInterval(gameTimer);
 				clearInterval(interval);
 				if(this.cards.length > 0){
-					this.gameMessageTag.innerText = "It's time to the next player's turn!";
+					this.gameMessageTag.innerText = "It's time for the next player's turn!";
 					this.turnTime = this.originTurnTime; // for more fluent time display and 10 seconds turn value show
 					this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
 					if(this.gameTime > 1 && !this.isError){
@@ -599,7 +612,7 @@ export class Game {
 						}, 3000);
 					}
 				}else{
-					this.gameMessageTag.innerText = "All cards are removed from the table!";
+					this.gameMessageTag.innerText = "All cards have been removed from the table!";
 					this.end();
 				}
 			}
@@ -634,15 +647,15 @@ export class Game {
 			return document.getElementById('turn-time');
 		}else {
 			const errorTag =  document.createElement('span');
-			console.log('ERROR - WRONG TIME TAG NAME');
+			console.log('Invalid time tag name');
 			return errorTag;
 		} 
 	}
 
 	playerTurn() {
-		// last turn hold card managment for last player
+		// last turn hold card management for last player
 		this.holdFunc();
-		// turn managment
+		// turn management
 		this.turns++;
 		Card.addGameTurn(this.turns);
 		Card.revealObject.click = false;
@@ -659,13 +672,13 @@ export class Game {
 		this.players.push(player);
 		// console.log(player);
 
-		// actual skip managment
+		// actual skip management
 		if(player.actualSkip === true){
 			player.actualSkip = false;
-			this.gameMessageTag.innerText = `${player.name}'s turn is skipped!`;
+			this.gameMessageTag.innerText = `${player.name}'s turn has been skipped!`;
 			return true;
 		}else{
-			this.gameMessageTag.innerText = `You can play`;
+			this.gameMessageTag.innerText = "You can play now.";
 			return false;
 		}
 	}
@@ -697,7 +710,7 @@ export class Game {
 				});
 				if(toHoldCard !== undefined){
 					toHoldCard.holdFlag = true;
-					this.gameMessageTag.innerText = `${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is holded for next turn!`;
+					this.gameMessageTag.innerText = `${Player.playerOnTurn.name}'s card ${toHoldCard.theme.icon} is held for next turn!`;
 				}
 				if(Card.generalRevealFlag === true){
 					Card.autoHideCards();
@@ -708,11 +721,11 @@ export class Game {
 		}
 	}
 
-	// TILT MANAGMENT
+	// TILT management
 
 	tiltLaunch() {
 		if(this.isTouchOnly){
-			console.log('Touch-only device was detected - TILT library is deactivated');
+			console.log('Tilt library disabled (touch-only device detected)');
 		}else{
 			//It also supports NodeList
 			VanillaTilt.init(document.querySelectorAll(".js-table"),
@@ -742,7 +755,7 @@ export class Game {
 				gyroscopeMinAngleY:     -45,    // This is the bottom limit of the device angle on Y axis, meaning that a device rotated at this angle would tilt the element as if the mouse was on the top border of the element;
 				gyroscopeMaxAngleY:     45,     // This is the top limit of the device angle on Y axis, meaning that a device rotated at this angle would tilt the element as if the mouse was on the bottom border of the element;
 			});
-			console.log('Touch-only device was NOT detected - TILT library is launched');
+			console.log('Tilt library enabled (mouse device detected)');
 		}
 	}
 						

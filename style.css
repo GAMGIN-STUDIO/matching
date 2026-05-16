@@ -51,6 +51,7 @@
 @layer base {
 
 	body {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		background: url('./svg/background-wallpaper.svg') center center / cover no-repeat;
@@ -59,6 +60,7 @@
 		font-weight: 400;
 
 		& header {
+			position: relative;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -67,7 +69,17 @@
 				font-size: larger;
 				margin: 0px;
 				color: white;
-				
+			}
+
+			& .rules-but {
+				position: absolute;
+				display: flex;
+				align-items: center;
+				right: 15px;
+				top: 50%;
+				transform: translateY(-50%);
+				color: blueviolet;
+				cursor: pointer;
 			}
 		}
 
@@ -145,7 +157,6 @@
 
 		& summary {
 			height: 35px;
-			line-height: 35px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -237,6 +248,99 @@
 				}
 			}
 		}
+
+		& .rules-box {
+			position: absolute;
+			top: 50%; left: 50%;
+			transform: translateX(-50%) translateY(-50%);
+			transition: opacity 0.6s ease-out;
+
+			display: flex;
+			justify-content: center;
+
+			font-family: 'M PLUS 1 Code';
+			font-weight: 300;
+			font-size: 0.8rem;
+			overflow: scroll;
+
+			box-sizing: border-box;
+			padding: 15px 10px;
+
+			border-radius: 8px;
+			border: 2px solid transparent;
+			background:
+				linear-gradient(rgb(255, 255, 255)) padding-box,
+				conic-gradient(
+					from var(--angle),
+					transparent 0deg,
+					transparent 120deg,
+					purple 240deg,
+					transparent 360deg
+				) border-box;
+			animation: spin 5s linear infinite;
+
+			& .rules-lang {
+				position: absolute;
+				right: 3px;
+				top: 3px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 1.5rem;
+				width: 1.5rem;
+				border: 2px solid rgb(135, 63, 206);
+				border-radius: 50%;
+				background-color: black;
+				color: rgb(135, 63, 206);
+				cursor: pointer;
+			}
+
+			& .rules-main {
+				
+				& ul {
+					list-style-position: outside;
+					padding-left: 15px;
+				}
+
+				& ol {
+					list-style-position: outside;
+					padding-left: 15px;
+				}
+			}
+		}
+
+		/* Hide scrollbar for Chrome, Safari and Opera */
+		& .rules-box::-webkit-scrollbar {
+			display: none;
+		}
+
+		/* Hide scrollbar for IE, Edge and Firefox */
+		& .rules-box {
+			-ms-overflow-style: none;  /* IE and Edge */
+			scrollbar-width: none;  /* Firefox */
+		}
+
+		& .rules-box.hidden {
+			opacity: 0;
+		}
+	}
+}
+
+@media (max-width: 350px){
+	@layer base {
+		body {
+			& .rules-box {
+				& .rules-main{
+					font-size: 0.5rem;
+				}
+
+				& .rules-lang {
+					font-size: 0.6rem;
+					height: 1.1rem;
+					width: 1.1rem;
+				}
+			}
+		}
 	}
 }
 
@@ -324,55 +428,4 @@
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* 	& .btn {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-width: 200px;
-		min-height: 200px;
-		border-radius: 60px;
-		border: 10px solid transparent;
-		background:
-			linear-gradient(gray) padding-box,
-			conic-gradient(
-				from var(--angle),
-				transparent 0deg,
-				transparent 120deg,
-				blue 240deg,
-				transparent 360deg
-			) border-box;
-
-		animation: spin 5s linear infinite;
-
-
-		key part always is:
-			position: relative;
-			border: 1px solid transparent;
-			background:
-				linear-gradient(rgb(255, 255, 255)) padding-box,
-				conic-gradient(
-					from var(--angle),
-					transparent 0deg,
-					transparent 120deg,
-					purple 240deg,
-					transparent 360deg
-				) border-box;
-
-			animation: spin 5s linear infinite;
-	} */
 

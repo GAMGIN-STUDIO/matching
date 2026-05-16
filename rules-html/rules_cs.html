@@ -1,0 +1,497 @@
+<div class="rules-header">
+	<h2>Varianta pexesa s minimem náhody</h2>
+
+	<p>
+		Tato varianta výrazně omezuje náhodu oproti klasickému pexesu
+		a přidává:
+	</p>
+
+	<ul>
+		<li>strategii</li>
+		<li>práci s rizikem</li>
+		<li>správu informací</li>
+		<li>taktické rozhodování mezi hráči</li>
+	</ul>
+
+	<p>
+		Nejde pouze o úpravu klasického pexesa,
+		ale téměř o novou paměťovou deskovou hru.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Cíl hry</h2>
+
+	<p>Hra končí:</p>
+
+	<ul>
+		<li>odstraněním všech dvojic ze hry</li>
+		<li>nebo vypršením časového limitu</li>
+	</ul>
+
+	<p>Vítězem se stává hráč:</p>
+
+	<ol>
+		<li>s nejmenším počtem skipů</li>
+		<li>při shodě hráč s nejvyšším počtem bodů</li>
+	</ol>
+
+	<h3>Co je skip</h3>
+
+	<p>
+		Skip znamená nucené vynechání následujícího tahu.
+	</p>
+
+	<p>
+		Každý hráč má vlastní počítadlo skipů
+		a také „actual skip“ stav pro okamžité
+		přeskočení příštího kola.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Stavy karet</h2>
+
+	<p>Každá karta může být v jednom ze tří stavů:</p>
+
+	<ol>
+		<li>
+			<strong>Zakrytá</strong>
+		</li>
+
+		<li>
+			<strong>Holdovaná (odkrytá na stole)</strong>
+			<p>
+				Karta zůstává odkrytá mezi tahy díky
+				rozhodnutí hráče.
+			</p>
+		</li>
+
+		<li>
+			<strong>Odstraněná ze hry</strong>
+			<p>
+				Dvojice byla nalezena a odstraněna.
+			</p>
+		</li>
+	</ol>
+</div>
+
+<div class='rules-section'>
+	<h2>Základ tahu hráče</h2>
+
+	<p>Hráč během svého tahu:</p>
+
+	<ul>
+		<li>může otočit kartu</li>
+		<li>může se rozhodnout nic neudělat</li>
+		<li>tah končí vypršením turn timeru</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Holdovaná karta</h2>
+
+	<h3>Co je hold</h3>
+
+	<p>
+		Holdovaná karta je karta,
+		která zůstala odkrytá na stole
+		z předchozího tahu.
+	</p>
+
+	<p>Vzniká pouze tehdy, když:</p>
+
+	<ul>
+		<li>hráč otočí první kartu</li>
+		<li>a rozhodne se druhou kartu neotáčet</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Situace po otočení první karty</h2>
+
+	<p>
+		Po otočení první karty mohou nastat dvě situace.
+	</p>
+
+	<div class='rules-article'>
+		<h3>Situace A — dvojice už je holdovaná</h3>
+
+		<p>
+			Pokud je druhá karta páru již odkrytá na stole:
+		</p>
+
+		<h4>Povinné odstranění dvojice</h4>
+
+		<p>
+			Pár musí být okamžitě odstraněn ze hry.
+		</p>
+
+		<div class='rules-section'>
+			<h4>A1 — hráč našel cizí holdovanou kartu</h4>
+
+			<p>
+				Pokud holdovanou kartu odkryl jiný hráč:
+			</p>
+
+			<ul>
+				<li>+1 skip</li>
+				<li>nucené přeskočení příštího tahu</li>
+			</ul>
+		</div>
+
+		<div class='rules-section'>
+			<h4>A2 — hráč našel vlastní holdovanou kartu</h4>
+
+			<p>
+				Pokud je hráč zároveň původcem holdované karty:
+			</p>
+
+			<ul>
+				<li>dvojice se odstraní</li>
+				<li>hráč získává +1 bod</li>
+				<li>může okamžitě pokračovat dalším tahem</li>
+			</ul>
+
+			<p>
+				Toto je hlavní způsob získávání bodů.
+			</p>
+		</div>
+
+		<div class='rules-section'>
+			<h4>Důležité omezení holdů</h4>
+
+			<p>
+				Hráč nemůže získat odměnu za hold
+				ve stejném tahu, ve kterém hold vytvořil.
+			</p>
+
+			<p>
+				Karta musí přežít alespoň jedno celé kolo
+				jako holdovaná.
+			</p>
+		</div>
+	</div>
+
+	<div class='rules-article'>
+		<h3>Situace B — dvojice není odkrytá</h3>
+
+		<p>
+			Pokud druhá karta páru není holdovaná,
+			má hráč dvě možnosti.
+		</p>
+
+		<div class='rules-section'>
+			<h4>Možnost 1 — otočit druhou kartu</h4>
+
+			<h5>Pokud vznikne pár</h5>
+
+			<ul>
+				<li>dvojice se odstraní ze hry</li>
+			</ul>
+
+			<h5>Pokud pár nevznikne</h5>
+
+			<ul>
+				<li>obě karty se znovu zakryjí</li>
+			</ul>
+		</div>
+
+		<div class='rules-section'>
+			<h4>Možnost 2 — neotáčet druhou kartu</h4>
+
+			<ul>
+				<li>první karta zůstává odkrytá</li>
+				<li>stává se holdovanou kartou</li>
+			</ul>
+
+			<p>
+				Tím hráč obětuje okamžitý pokus o pár
+				výměnou za strategickou informaci
+				do dalších tahů.
+			</p>
+		</div>
+	</div>
+</div>
+
+<div class='rules-section'>
+	<h2>Pravidla holdování</h2>
+
+	<div class='rules-article'>
+		<h3>Hold lze vytvořit pouze okamžitě</h3>
+
+		<p>
+			Hráč se musí rozhodnout už po otočení první karty.
+		</p>
+
+		<p>Není možné:</p>
+
+		<ul>
+			<li>otočit dvě karty</li>
+			<li>
+				a teprve potom vybrat,
+				která zůstane odkrytá
+			</li>
+		</ul>
+	</div>
+
+	<div class='rules-article'>
+		<h3>Nelze držet více holdů najednou</h3>
+
+		<p>
+			Pokud hráč už holdovanou kartu má z minulého tahu:
+		</p>
+
+		<ul>
+			<li>nemůže vytvořit nový hold</li>
+			<li>
+				dokud původní hold:
+				<ul>
+					<li>neschová</li>
+					<li>nebo neodstraní vytvořením páru</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+	<div class='rules-article'>
+		<h3>Chování při existujícím holdu</h3>
+
+		<p>
+			Pokud má hráč hold z minulého tahu:
+		</p>
+
+		<ul>
+			<li>může zdarma otočit pouze jednu novou kartu</li>
+			<li>
+				pokud nevznikne pár:
+				<ul>
+					<li>nově otočená karta se automaticky schová</li>
+					<li>původní hold zůstává</li>
+				</ul>
+			</li>
+		</ul>
+
+		<p>
+			Pokud ale hráč svůj původní hold nejdříve schová:
+		</p>
+
+		<ul>
+			<li>
+				získává zpět standardní možnost
+				otočit dvě karty během tahu
+			</li>
+
+			<li>
+				za cenu ztráty původního holdu
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div class='rules-section'>
+	<h2>Pravidlo proti odkrytí celého stolu</h2>
+
+	<p>
+		Hráč nesmí řetězit holdy bez jejich rušení.
+	</p>
+
+	<p>To znamená:</p>
+
+	<ul>
+		<li>
+			není možné neustále přidávat nové odkryté informace
+		</li>
+
+		<li>
+			aniž by se staré holdy řešily
+		</li>
+	</ul>
+
+	<p>Cílem je:</p>
+
+	<ul>
+		<li>
+			zabránit přehlcení stolu odkrytými kartami
+		</li>
+
+		<li>
+			zachovat strategii a paměť
+			jako hlavní mechaniku
+		</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Body (points)</h2>
+
+	<p>Body slouží:</p>
+
+	<ul>
+		<li>jako sekundární podmínka vítězství</li>
+		<li>i jako herní měna pro speciální akce</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Reveal mód</h2>
+
+	<p>Hráč může utratit:</p>
+
+	<ul>
+		<li>1 bod za dočasné odkrytí jedné karty</li>
+	</ul>
+
+	<h3>Pravidla</h3>
+
+	<ul>
+		<li>karta se po chvíli automaticky schová</li>
+		<li>
+			reveal nepočítá jako standardní otočení zdarma
+		</li>
+
+		<li>
+			hráč může reveal používat opakovaně,
+			pokud má dost bodů
+		</li>
+	</ul>
+
+	<h3>Kombinace reveal a běžného tahu</h3>
+
+	<ul>
+		<li>
+			i při používání reveal módu
+			má hráč stále běžná otočení zdarma
+		</li>
+
+		<li>
+			standardní limit zdarma
+			jsou dvě otočení za tah
+		</li>
+	</ul>
+
+	<p>
+		Pokud chce hráč pokračovat běžným režimem,
+		musí reveal mód vypnout.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Zrušení skipu</h2>
+
+	<p>Pokud má hráč alespoň 3 body:</p>
+
+	<ul>
+		<li>může utratit 3 body</li>
+		<li>a odstranit si jeden skip</li>
+		<li>i eliminace zdržení se tahu (Actual skip)</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Speciální pravidla skipů na začátku hry</h2>
+
+	<p>Aby byl začátek férovější:</p>
+
+	<ul>
+		<li>
+			při 2 hráčích neplatí skipy první 2 kola
+		</li>
+
+		<li>
+			při 3 hráčích neplatí skipy první 3 kola
+		</li>
+	</ul>
+
+	<p>
+		Odstraňování dvojic ale funguje normálně.
+	</p>
+
+	<p>Výjimkou je reveal mód.</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Vlastnictví odkrytých karet</h2>
+
+	<p>
+		Odkrytou kartu může dobrovolně schovat
+		pouze hráč, který je zodpovědný
+		za její odkrytí.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Strategie hry</h2>
+
+	<p>
+		Hra není pouze o hledání dvojic.
+	</p>
+
+	<p>Hráč často řeší:</p>
+
+	<ul>
+		<li>zda riskovat</li>
+		<li>zda vytvořit hold</li>
+		<li>zda odstranit pár</li>
+		<li>zda se vyhnout skipu</li>
+		<li>nebo raději nedělat nic a čekat</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Strategické důsledky</h2>
+
+	<h3>Hráč s nízkým počtem skipů</h3>
+
+	<p>
+		Pokud má hráč výrazně méně skipů než ostatní:
+	</p>
+
+	<ul>
+		<li>jeho hlavním nepřítelem se stává čas</li>
+		<li>často je výhodnější hrát bezpečně</li>
+		<li>
+			a sabotovat soupeře bezpečným způsobem
+		</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Co dělá tuto variantu zajímavou</h2>
+
+	<div class='rules-article'>
+		<h3>1. Paměť je důležitější než v klasickém pexesu</h3>
+
+		<p>
+			Holdované karty zůstávají na stole
+			a vytvářejí dlouhodobé informace.
+		</p>
+	</div>
+
+	<div class='rules-article'>
+		<h3>2. Vzniká skutečná strategie</h3>
+
+		<p>Hráč se může rozhodnout:</p>
+
+		<ul>
+			<li>získat body</li>
+			<li>nechat informaci ostatním</li>
+			<li>vyhnout se penalizaci</li>
+			<li>nebo takticky čekat</li>
+		</ul>
+	</div>
+
+	<div class='rules-article'>
+		<h3>3. Náhoda je výrazně menší</h3>
+
+		<p>
+			V klasickém pexesu je mnoho tahů
+			čistě náhodných.
+		</p>
+
+		<p>
+			Zde většina tahů představuje
+			vědomé rozhodnutí.
+		</p>
+	</div>
+</div>

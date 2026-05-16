@@ -1,0 +1,513 @@
+<div class="rules-header">
+	<h2>Memory Game Variant with Minimal Randomness</h2>
+
+	<p>
+		This variant significantly reduces randomness compared
+		to the classic memory game and introduces:
+	</p>
+
+	<ul>
+		<li>strategy</li>
+		<li>risk management</li>
+		<li>information control</li>
+		<li>tactical decision-making between players</li>
+	</ul>
+
+	<p>
+		This is not just a modification of the classic memory game,
+		but almost an entirely new memory-based board game.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Game Objective</h2>
+
+	<p>The game ends when:</p>
+
+	<ul>
+		<li>all pairs are removed from the game</li>
+		<li>or the time limit expires</li>
+	</ul>
+
+	<p>The winner is the player:</p>
+
+	<ol>
+		<li>with the fewest skips</li>
+		<li>if tied, the player with the most points wins</li>
+	</ol>
+
+	<h3>What is a skip</h3>
+
+	<p>
+		A skip means a forced loss of the player's next turn.
+	</p>
+
+	<p>
+		Each player has their own skip counter
+		and also an “actual skip” state
+		for immediate skipping of the next round.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Card States</h2>
+
+	<p>Each card can be in one of three states:</p>
+
+	<ol>
+		<li>
+			<strong>Face-down</strong>
+		</li>
+
+		<li>
+			<strong>Held (revealed on the table)</strong>
+			<p>
+				The card remains visible between turns
+				because of the player's decision.
+			</p>
+		</li>
+
+		<li>
+			<strong>Removed from the game</strong>
+			<p>
+				The pair has been found and removed.
+			</p>
+		</li>
+	</ol>
+</div>
+
+<div class='rules-section'>
+	<h2>Basic Player Turn</h2>
+
+	<p>During their turn, a player:</p>
+
+	<ul>
+		<li>may flip a card</li>
+		<li>may choose to do nothing</li>
+		<li>the turn ends when the turn timer expires</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Held Card</h2>
+
+	<h3>What is a hold</h3>
+
+	<p>
+		A held card is a card
+		that remained revealed on the table
+		from a previous turn.
+	</p>
+
+	<p>A hold is created only when:</p>
+
+	<ul>
+		<li>the player flips the first card</li>
+		<li>and decides not to flip a second card</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Situations After Flipping the First Card</h2>
+
+	<p>
+		After flipping the first card,
+		two situations may occur.
+	</p>
+
+	<div class='rules-article'>
+		<h3>Situation A — the matching pair is already held</h3>
+
+		<p>
+			If the second card of the pair
+			is already revealed on the table:
+		</p>
+
+		<h4>Mandatory pair removal</h4>
+
+		<p>
+			The pair must immediately be removed from the game.
+		</p>
+
+		<div class='rules-section'>
+			<h4>A1 — player found another player's held card</h4>
+
+			<p>
+				If the held card was revealed by another player:
+			</p>
+
+			<ul>
+				<li>+1 skip</li>
+				<li>forced skipping of the next turn</li>
+			</ul>
+		</div>
+
+		<div class='rules-section'>
+			<h4>A2 — player found their own held card</h4>
+
+			<p>
+				If the player is also the owner
+				of the held card:
+			</p>
+
+			<ul>
+				<li>the pair is removed</li>
+				<li>the player gains +1 point</li>
+				<li>the player may immediately continue with another turn</li>
+			</ul>
+
+			<p>
+				This is the primary way of earning points.
+			</p>
+		</div>
+
+		<div class='rules-section'>
+			<h4>Important hold limitation</h4>
+
+			<p>
+				A player cannot receive a hold reward
+				during the same turn in which the hold was created.
+			</p>
+
+			<p>
+				The card must survive at least one full round
+				as a held card.
+			</p>
+		</div>
+	</div>
+
+	<div class='rules-article'>
+		<h3>Situation B — the matching pair is not revealed</h3>
+
+		<p>
+			If the matching card is not held,
+			the player has two options.
+		</p>
+
+		<div class='rules-section'>
+			<h4>Option 1 — flip the second card</h4>
+
+			<h5>If a pair is created</h5>
+
+			<ul>
+				<li>the pair is removed from the game</li>
+			</ul>
+
+			<h5>If no pair is created</h5>
+
+			<ul>
+				<li>both cards are turned face-down again</li>
+			</ul>
+		</div>
+
+		<div class='rules-section'>
+			<h4>Option 2 — do not flip the second card</h4>
+
+			<ul>
+				<li>the first card remains revealed</li>
+				<li>it becomes a held card</li>
+			</ul>
+
+			<p>
+				This sacrifices an immediate attempt
+				at making a pair
+				in exchange for strategic information
+				for future turns.
+			</p>
+		</div>
+	</div>
+</div>
+
+<div class='rules-section'>
+	<h2>Hold Rules</h2>
+
+	<div class='rules-article'>
+		<h3>A hold can only be created immediately</h3>
+
+		<p>
+			The player must decide
+			right after flipping the first card.
+		</p>
+
+		<p>It is not possible to:</p>
+
+		<ul>
+			<li>flip two cards</li>
+			<li>
+				and only then decide
+				which one remains revealed
+			</li>
+		</ul>
+	</div>
+
+	<div class='rules-article'>
+		<h3>You cannot maintain multiple holds simultaneously</h3>
+
+		<p>
+			If a player already has a held card
+			from a previous turn:
+		</p>
+
+		<ul>
+			<li>they cannot create a new hold</li>
+			<li>
+				until the original hold is:
+				<ul>
+					<li>hidden again</li>
+					<li>or removed by forming a pair</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+	<div class='rules-article'>
+		<h3>Behavior while already holding a card</h3>
+
+		<p>
+			If a player has a hold from a previous turn:
+		</p>
+
+		<ul>
+			<li>they may freely flip only one new card</li>
+			<li>
+				if no pair is formed:
+				<ul>
+					<li>the newly flipped card is automatically hidden</li>
+					<li>the original hold remains</li>
+				</ul>
+			</li>
+		</ul>
+
+		<p>
+			However, if the player first hides
+			their original hold:
+		</p>
+
+		<ul>
+			<li>
+				they regain the standard ability
+				to flip two cards during the turn
+			</li>
+
+			<li>
+				at the cost of losing the original hold
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div class='rules-section'>
+	<h2>Rule Preventing Full Board Reveal</h2>
+
+	<p>
+		Players cannot endlessly chain holds
+		without resolving previous ones.
+	</p>
+
+	<p>This means:</p>
+
+	<ul>
+		<li>
+			it is not possible to continuously add
+			new revealed information
+		</li>
+
+		<li>
+			without dealing with older holds
+		</li>
+	</ul>
+
+	<p>The goal is to:</p>
+
+	<ul>
+		<li>
+			prevent the table from becoming overloaded
+			with revealed cards
+		</li>
+
+		<li>
+			preserve strategy and memory
+			as the core mechanics
+		</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Points</h2>
+
+	<p>Points serve:</p>
+
+	<ul>
+		<li>as a secondary win condition</li>
+		<li>and as an in-game currency for special actions</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Reveal Mode</h2>
+
+	<p>A player may spend:</p>
+
+	<ul>
+		<li>1 point to temporarily reveal one card</li>
+	</ul>
+
+	<h3>Rules</h3>
+
+	<ul>
+		<li>the card automatically hides again after a short time</li>
+		<li>
+			a reveal does not count
+			as a normal free flip
+		</li>
+
+		<li>
+			the player may repeatedly use reveal mode
+			as long as they have enough points
+		</li>
+	</ul>
+
+	<h3>Combining reveal mode with a normal turn</h3>
+
+	<ul>
+		<li>
+			even while using reveal mode,
+			the player still keeps their normal free flips
+		</li>
+
+		<li>
+			the standard free limit
+			is two flips per turn
+		</li>
+	</ul>
+
+	<p>
+		If the player wants to continue
+		using the normal mode,
+		they must disable reveal mode.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Removing a Skip</h2>
+
+	<p>If a player has at least 3 points:</p>
+
+	<ul>
+		<li>they may spend 3 points</li>
+		<li>to remove one skip</li>
+		<li>including the “actual skip” turn penalty</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Special Skip Rules at the Start of the Game</h2>
+
+	<p>To make the opening fairer:</p>
+
+	<ul>
+		<li>
+			with 2 players, skips are disabled
+			for the first 2 rounds
+		</li>
+
+		<li>
+			with 3 players, skips are disabled
+			for the first 3 rounds
+		</li>
+	</ul>
+
+	<p>
+		Pair removal still functions normally.
+	</p>
+
+	<p>The only exception is reveal mode.</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Ownership of Revealed Cards</h2>
+
+	<p>
+		A revealed card may only be voluntarily hidden
+		by the player responsible
+		for revealing it.
+	</p>
+</div>
+
+<div class='rules-section'>
+	<h2>Game Strategy</h2>
+
+	<p>
+		The game is not only about finding pairs.
+	</p>
+
+	<p>Players frequently consider:</p>
+
+	<ul>
+		<li>whether to take risks</li>
+		<li>whether to create a hold</li>
+		<li>whether to remove a pair</li>
+		<li>whether to avoid a skip</li>
+		<li>or whether to do nothing and wait</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>Strategic Consequences</h2>
+
+	<h3>Player with a low number of skips</h3>
+
+	<p>
+		If a player has significantly fewer skips
+		than the others:
+	</p>
+
+	<ul>
+		<li>their greatest enemy becomes time</li>
+		<li>it is often better to play safely</li>
+		<li>
+			and sabotage opponents carefully
+			and indirectly
+		</li>
+	</ul>
+</div>
+
+<div class='rules-section'>
+	<h2>What Makes This Variant Interesting</h2>
+
+	<div class='rules-article'>
+		<h3>1. Memory matters more than in classic memory games</h3>
+
+		<p>
+			Held cards remain on the table
+			and create long-term information.
+		</p>
+	</div>
+
+	<div class='rules-article'>
+		<h3>2. Real strategy emerges</h3>
+
+		<p>A player may decide to:</p>
+
+		<ul>
+			<li>earn points</li>
+			<li>leave information for others</li>
+			<li>avoid penalties</li>
+			<li>or wait strategically</li>
+		</ul>
+	</div>
+
+	<div class='rules-article'>
+		<h3>3. Randomness is significantly reduced</h3>
+
+		<p>
+			In classic memory games,
+			many turns are purely random.
+		</p>
+
+		<p>
+			Here, most turns represent
+			a conscious strategic decision.
+		</p>
+	</div>
+</div>

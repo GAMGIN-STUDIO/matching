@@ -30,10 +30,10 @@ export class Player {
 			document.querySelector('#name').innerText = Player.playerOnTurn.name;
 			document.querySelector('#points').innerText = Player.playerOnTurn.points;
 			document.querySelector('#skip').innerText = Player.playerOnTurn.skip;
-			document.querySelector('#actual-skip').innerText = Player.playerOnTurn.actualSkip ? 'Yes' : 'No';
+			document.querySelector('#actual-skip').innerText = Player.playerOnTurn.actualSkip ? 'On' : 'Off';
 			document.querySelector('#counter').innerText = Player.playerOnTurn.counter;
 		}else{
-			throw new Error('Player tag parameters do not match the player on turn');
+			throw new Error('Player element does not match the current player');
 		}
 	}
 
@@ -56,11 +56,11 @@ export class Player {
 	static writePlayersQueue(playersQueueTags){
 		for(let i = 0; i < playersQueueTags.length; i++){
 			if(playersQueueTags[i] instanceof HTMLElement){
-				// player who will be on turn after the actual player on turn (and player who will be on turn after the palyerII)
-				playersQueueTags[i].innerText = this.gamePlayers[i].name; // at this moment the player is on the first place in the array on index 0 (and at this moment the player is on the second place in the array on index 1)
+				// player who will play after the current player (and after player II)
+				playersQueueTags[i].innerText = this.gamePlayers[i].name; // at this moment, the player is first in the array (index 0),,, // at this moment, the player is second in the array (index 1)
 				playersQueueTags[i].id = this.gamePlayers[i].id;
 			}else {
-				throw new Error('Player queue tags are not found in the DOM (NOT MOUNTED)');
+				throw new Error('Player queue elements not found in the DOM (not mounted)');
 			}
 		}
 	}
@@ -75,7 +75,7 @@ export class Player {
 			this.writePlayerOnTurn(playerOnTurnTag, this.playerOnTurn.id);
 			this.writePlayersQueue(playersQueueTags);
 		}else {
-			throw new Error('Player tag is not found in the DOM');
+			throw new Error('Player element not found in the DOM');
 		}
 	}
 
