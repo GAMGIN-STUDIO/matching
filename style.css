@@ -54,7 +54,6 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		background: url('./svg/background-wallpaper.svg') center center / cover no-repeat;
 		margin: 0px; /* cause of right computing size of the table and cards */
 		font-family: 'Indie Flower';
 		font-weight: 400;
@@ -156,11 +155,12 @@
 		}
 
 		& summary {
-			height: 35px;
+			height: 45px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			font-size: 12px;
+			font-size: clamp(10px, 1vw, 15px);
+			box-sizing: border-box;
 			padding: 10px 10px;
 			padding-bottom: 0px;
 			color: white;
@@ -252,11 +252,11 @@
 		& .rules-box {
 			position: absolute;
 			top: 50%; left: 50%;
-			transform: translateX(-50%) translateY(-50%);
+			transform: translate(-50%, -50%);
 			transition: opacity 0.6s ease-out;
 
 			display: flex;
-			justify-content: center;
+			z-index: 10;
 
 			font-family: 'M PLUS 1 Code';
 			font-weight: 300;
@@ -265,9 +265,9 @@
 
 			box-sizing: border-box;
 			padding: 15px 10px;
-
 			border-radius: 8px;
-			border: 2px solid transparent;
+			border: 4px solid transparent;
+
 			background:
 				linear-gradient(rgb(255, 255, 255)) padding-box,
 				conic-gradient(
@@ -296,7 +296,7 @@
 			}
 
 			& .rules-main {
-				
+
 				& ul {
 					list-style-position: outside;
 					padding-left: 15px;
@@ -323,6 +323,18 @@
 		& .rules-box.hidden {
 			opacity: 0;
 		}
+
+		& .rules-box.hidden.none {
+			visibility: hidden;
+		}
+	}
+
+	body::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		background: url('./svg/background-wallpaper.svg') center/cover no-repeat;
+		z-index: -1;
 	}
 }
 

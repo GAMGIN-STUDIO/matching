@@ -15,6 +15,9 @@ function loadRules(rules){
 }
 
 rulesBut.addEventListener('click', () => {
+	if(rulesBox.classList.contains('none')){
+		rulesBox.classList.remove('none');
+	}
 	if(rulesBox.classList.contains('hidden')){
 		rulesBox.style.zIndex = 'initial';
 		rulesBox.classList.remove('hidden');
@@ -43,6 +46,8 @@ rulesLang.addEventListener('click', () => {
 loadRules('rules_en');
 rulesMain.id = 'en';
 rulesBox.classList.add('hidden');
+rulesBox.classList.add('none');
 rulesBox.style.zIndex = '-1';
 rulesBox.style.height = `${window.innerHeight/2}px`;
 rulesBox.style.width = `${window.innerWidth/2}px`;
+rulesBox.style.maxWidth = '720px';
