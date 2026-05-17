@@ -143,7 +143,13 @@ export class Game {
 				numPlayers = this.admin ? 2 : Number(prompt('Enter number of players (2–3):'));
 			}
 			for (let i = 0; i < numPlayers; i++) {
-				const playerName = this.admin ? `Player ${i+1}` : prompt(`Enter name for Player ${i + 1}:`)
+				let playerName = '';
+				while(playerName.length === 0 || playerName.length > 20){
+					playerName = this.admin ? `Player ${i+1}` : prompt(`Enter name (max 20 characters) for Player ${i + 1}:`);
+					if(playerName === null){
+						playerName = `Player ${i + 1}`;
+					}
+				}
 				const player = new Player(playerName, i+1);
 				this.players.push(player);
 			}
@@ -576,10 +582,6 @@ export class Game {
 		const interval = setInterval(() => {
 			this.gameTime = this.gameTime - 1;
 			this.gameTimeToTime();
-			if(this.gameTime === 0) {
-				clearInterval(interval);
-				this.end();
-			}
 		}, 1000);
 		return interval
 	}
@@ -595,25 +597,38 @@ export class Game {
 					this.gameMessageTag.innerText = "It's time for the next player's turn!";
 					this.turnTime = this.originTurnTime; // for more fluent time display and 10 seconds turn value show
 					this.gameTime = this.gameTime + 1; // compesation for 10 seconds turn value show
-					if(this.gameTime > 1 && !this.isError){
-						setTimeout(() => {
-							let isSkipped = true;
-							while(isSkipped){
-								try{
-									isSkipped = this.playerTurn();
-								}catch(error){
-									this.isError = true;
-									console.log(error);
-									break; // IMPORTANT - if error during while cycle, it would kill browser without break
+					if(this.gameTime > 1){
+						if(!this.isError){
+							setTimeout(() => {
+								let isSkipped = true;
+								while(isSkipped){
+									try{
+										isSkipped = this.playerTurn();
+									}catch(error){
+										this.isError = true;
+										console.log(error);
+										break; // IMPORTANT - if error during while cycle, it would kill browser without break
+									}
 								}
-							}
-							const newGameTimer = this.gameTimerF();
-							this.turnTimerF(newGameTimer);
+								const newGameTimer = this.gameTimerF();
+								this.turnTimerF(newGameTimer);
+							}, 3000);
+						}else{
+							console.log("An error has occured during turn!")
+						}
+					}else{
+						// second posibility of game end
+						this.gameMessageTag.innerText = "Game timer expired!";
+						setTimeout(() => {
+							this.end();
 						}, 3000);
 					}
 				}else{
+					// first posibility of game end
 					this.gameMessageTag.innerText = "All cards have been removed from the table!";
-					this.end();
+					setTimeout(() => {
+						this.end();
+					}, 3000);
 				}
 			}
 		}, 1000);
