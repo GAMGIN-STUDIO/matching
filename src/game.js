@@ -344,7 +344,7 @@ export class Game {
 				this.mainTag.style.flexDirection = 'column';
 				this.mainTag.style.alignItems = 'center';
 				this.bodyTag.classList.add('mobile'); // main is column but control panel is row
-				if(this.sizeObject.width < (500 + (2 * this.scoreTagStyles.paddingX))){ // 500 = cca 380 (player + queue) + cca 120 (time) + some tolerance
+				if(this.sizeObject.width < (580 + (2 * this.scoreTagStyles.paddingX))){ // 580 = cca 460 ((player + queue) with longest name posibility) + cca 120 (time) + some tolerance
 					scoreTag.style.flexDirection = 'column';
 					scoreTag.style.alignItems = 'center';
 					scoreTag.style.justifyContent = 'flex-start';
