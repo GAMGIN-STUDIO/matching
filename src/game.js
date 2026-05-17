@@ -16,12 +16,12 @@ export class Game {
 		let originTurnTime = null;
 		if(!this.admin){
 			gameTime = Number(prompt('Enter game duration in minutes (1–60):'));
-			originTurnTime = Number(prompt('Enter turn duration in seconds (5–10):'));
+			originTurnTime = Number(prompt('Enter turn duration in seconds (5–15):'));
 			if(					
 					(gameTime === null || originTurnTime === null)||
 					(Number.isNaN(gameTime) || Number.isNaN(originTurnTime)) ||
 					(gameTime < 1 || gameTime > 60) ||
-					(originTurnTime < 5 || originTurnTime > 10) ||
+					(originTurnTime < 5 || originTurnTime > 15) ||
 					(!Number.isInteger(gameTime) || !Number.isInteger(originTurnTime))
 				){
 					gameTime = 20; // default game time in minutes
