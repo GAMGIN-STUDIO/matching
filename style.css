@@ -19,7 +19,7 @@
   font-family: 'M PLUS 1 Code';
   font-style: normal;
   font-weight: 300;
-  src: url('../fonts/m-plus-1-code-v17-latin_latin-ext-300.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('./fonts/m-plus-1-code-v17-latin_latin-ext-300.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 /* m-plus-1-code-700 - latin_latin-ext */
@@ -28,7 +28,7 @@
   font-family: 'M PLUS 1 Code';
   font-style: normal;
   font-weight: 700;
-  src: url('../fonts/m-plus-1-code-v17-latin_latin-ext-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('./fonts/m-plus-1-code-v17-latin_latin-ext-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 /* indie-flower-regular - latin_latin-ext */
@@ -37,7 +37,7 @@
   font-family: 'Indie Flower';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/indie-flower-v24-latin_latin-ext-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('./fonts/indie-flower-v24-latin_latin-ext-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 
